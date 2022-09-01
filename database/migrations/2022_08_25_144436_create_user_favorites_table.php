@@ -17,7 +17,7 @@ class CreateUserFavoritesTable extends Migration
             $table->id();
             $table->integer('contextid');
             $table->string('component');
-            $table->foreignId('account_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->softDeletes();
             $table->timestamps();
         });

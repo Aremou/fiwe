@@ -15,7 +15,7 @@ class CreateUserExperiencesTable extends Migration
     {
         Schema::create('user_experiences', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('account_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('tourist_experience_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->decimal('price');
             $table->string('disponibility');

@@ -32,6 +32,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'role',
+        'phone_verified',
         'is_active',
         'password',
         'deleted_at',

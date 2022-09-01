@@ -9,9 +9,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Actions\Fortify\PasswordValidationRules;
 
 class AuthController extends Controller
 {
+    use PasswordValidationRules;
     /**
      * Create User
      * @param Request $request
@@ -30,7 +32,6 @@ class AuthController extends Controller
                 'birth_date' => 'required',
                 'phone' => 'required|unique:users,phone',
                 'email' => 'required|email|unique:users,email',
-                'password' => 'required'
             ]);
 
             if($validateUser->fails()){
@@ -46,7 +47,6 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'phone' => $request->phone,
                 'role' => 'user',
-                'password' => Hash::make($request->password)
             ]);
 
             Account::create([
@@ -57,10 +57,13 @@ class AuthController extends Controller
                 'user_id' => $user->id
             ]);
 
+            $tokenResult = $user->createToken('authToken')->plainTextToken;
+
             return response()->json([
                 'status' => true,
                 'message' => 'User Created Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'token' => $tokenResult,
+                'token_type' => 'Bearer',
             ], 200);
 
         } catch (\Throwable $th) {
@@ -101,12 +104,154 @@ class AuthController extends Controller
             }
 
             $user = User::where('phone', $request->phone)->first();
+            $tokenResult = $user->createToken('authToken')->plainTextToken;
 
             return response()->json([
                 'status' => true,
                 'message' => 'User Logged In Successfully',
-                'token' => $user->createToken("API TOKEN")->plainTextToken
+                'token' => $tokenResult,
+                'token_type' => 'Bearer',
             ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Forget Password for User
+     * @param Request $request
+     * @return User
+     */
+    public function forgetPasswordUser(Request $request)
+    {
+        try {
+            $validatePhone = Validator::make($request->all(),
+            [
+                'phone' => 'required',
+            ]);
+
+            if($validatePhone->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validatePhone->errors()
+                ], 401);
+            }
+
+            $user = User::where('phone', $request->phone)->first();
+
+            do {
+                $code = rand(100000, 999999);
+
+                $code_exist = User::where('phone_verified', $code)->first();
+            } while ( $code_exist != null);
+
+            $user->update([
+                'phone_verified' => $code,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'User Logged In Successfully',
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Verify Account The User
+     * @param Request $request
+     * @return User
+     */
+    public function verifyAccountUser(Request $request)
+    {
+        try {
+            $validatePhone = Validator::make($request->all(),
+            [
+                'codePhone' => 'required',
+            ]);
+
+            if($validatePhone->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validatePhone->errors()
+                ], 401);
+            }
+
+            $user = User::where('phone_verified', $request->codePhone)->first();
+
+            if ($user) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Code Phone Successfully',
+                    'codePhone' => $request->codePhone,
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validatePhone->errors()
+                ], 401);
+            }
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Reset Password The User
+     * @param Request $request
+     * @return User
+     */
+    public function resetPasswordUser(Request $request)
+    {
+        try {
+            $validatePassword = Validator::make($request->all(),
+            [
+                'password' => $this->passwordRules(),
+                'codePhone' => 'required'
+            ]);
+
+            if($validatePassword->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validatePassword->errors()
+                ], 401);
+            }
+
+            $user = User::where('phone_verified', $request->codePhone)->first();
+
+            if ($user) {
+                $user->update([
+                    'password' => Hash::make($request->password),
+                    'phone_verified' => null
+                ]);
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Password Successfully Update',
+                ], 200);
+            }else{
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validatePassword->errors()
+                ], 401);
+            }
 
         } catch (\Throwable $th) {
             return response()->json([

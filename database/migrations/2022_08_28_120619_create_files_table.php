@@ -20,7 +20,7 @@ class CreateFilesTable extends Migration
             $table->string('filepath');
             $table->string('filename');
             $table->boolean('is_active')->default(0);
-            $table->foreignId('account_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->softDeletes();
             $table->timestamps();
         });

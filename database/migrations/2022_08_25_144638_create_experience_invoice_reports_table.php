@@ -16,7 +16,7 @@ class CreateExperienceInvoiceReportsTable extends Migration
         Schema::create('experience_invoice_reports', function (Blueprint $table) {
             $table->id();
             $table->text('description');
-            $table->foreignId('account_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->string('status');
             $table->boolean('is_resolved');
             $table->softDeletes();

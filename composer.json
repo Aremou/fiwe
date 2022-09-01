@@ -13,7 +13,8 @@
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
         "livewire/livewire": "^2.5",
-        "mercuryseries/flashy": "^1.0"
+        "mercuryseries/flashy": "^1.0",
+        "twilio/sdk": "^6.41"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

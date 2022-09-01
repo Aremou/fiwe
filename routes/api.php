@@ -27,9 +27,14 @@ Route::post('/auth/signup', [AuthController::class, 'createUser']);
 
 Route::post('/auth/signin', [AuthController::class, 'loginUser']);
 
+Route::post('/auth/forget-password', [AuthController::class, 'forgetPasswordUser']);
+
 Route::post('/auth/verify-account', [AuthController::class, 'verifyAccountUser']);
 
 Route::post('/auth/reset-password', [AuthController::class, 'resetPasswordUser']);
+
+
+
 
 Route::get('/interest-center-category', [InterestCenterCategoryController::class, 'index']);
 
@@ -37,7 +42,6 @@ Route::get('/interest-center', [InterestCenterController::class, 'index']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
-
 
     //Interest Center Category
     Route::post('/interest-center-category', [InterestCenterCategoryController::class, 'store']);

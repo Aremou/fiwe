@@ -17,7 +17,7 @@ class CreateNotificationsTable extends Migration
             $table->id();
             $table->string('label');
             $table->text('description');
-            $table->foreignId('account_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->softDeletes();
             $table->timestamps();
         });
