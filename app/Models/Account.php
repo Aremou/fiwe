@@ -18,6 +18,7 @@ class Account extends Model
         'birth_date',
         'civility',
         'birth_country',
+        'profession',
         'badge',
         'game_level',
         'experience_count',

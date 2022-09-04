@@ -33,6 +33,8 @@ class User extends Authenticatable
         'phone',
         'role',
         'phone_verified',
+        'profil_picture_id',
+        'cover_picture_id',
         'is_active',
         'password',
         'deleted_at',

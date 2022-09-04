@@ -19,10 +19,10 @@ class CreateAccountsTable extends Migration
             $table->date('birth_date');
             $table->string('civility');
             $table->string('birth_country');
+            $table->string('profession');
             $table->string('badge')->nullable();
             $table->string('game_level')->nullable();
             $table->integer('experience_count')->default(0);
-            $table->string('cover_picture')->nullable();
             $table->boolean('certify')->default(0);
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->softDeletes();

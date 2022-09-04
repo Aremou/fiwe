@@ -53,8 +53,7 @@ class InterestCenterController extends Controller
                 'description' => $request->description,
                 'lat' => $request->lat,
                 'long' => $request->long,
-                'account_id' => auth()->user()->role == "user" ? auth()->user()->id : null ,
-                'admin_account_id' => auth()->user()->role == "admin" ? auth()->user()->id : null ,
+                'user_id' => auth()->user()->id,
                 'interest_center_category_id' => $request->interest_center_category,
                 'is_active' => auth()->user()->role == "user" ? 0 : 1
             ]);
@@ -156,26 +155,5 @@ class InterestCenterController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function interest_center_user($id)
-    {
-        $user = User::findOrfail($id);
-        return InterestCenter::where('account_id', $user->accounts[0]->id)->where('is_active', 1)->get();
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function interest_center_admin()
-    {
-        return InterestCenter::where('admin_account_id', '<>', null)->where('is_active', 1)->get();
     }
 }

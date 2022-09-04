@@ -18,10 +18,19 @@ class Administrateur
     {
         $user = $request->user();
 
-        if ($user && $user->role === 'administrateur') {
+        if ($user && $user->role === 'admin') {
 
             return $next($request);
         }
+
+        if ($user && $user->role === 'user') {
+
+            return response()->json([
+                'status' => false,
+                'message' => 'unauthorized',
+            ], 401);
+        }
+
         return redirect()->route('login');
     }
 }

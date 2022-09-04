@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\User;
 use App\Models\Account;
+use Twilio\Rest\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,7 @@ class AuthController extends Controller
                 'civility' => 'required',
                 'birth_country' => 'required',
                 'birth_date' => 'required',
+                'profession' => 'required',
                 'phone' => 'required|unique:users,phone',
                 'email' => 'required|email|unique:users,email',
             ]);
@@ -54,17 +56,26 @@ class AuthController extends Controller
                 'birth_date' => $request->birth_date,
                 'civility' => $request->civility,
                 'birth_country' => $request->birth_country,
+                'profession' => $request->profession,
                 'user_id' => $user->id
             ]);
 
-            $tokenResult = $user->createToken('authToken')->plainTextToken;
+            $code = generate_code_user($user);
+
+            try {
+
+                send_sms($request->phone, $code);
+
+            } catch (\Throwable $th) {
+                // print($th);
+            }
 
             return response()->json([
                 'status' => true,
                 'message' => 'User Created Successfully',
-                'token' => $tokenResult,
-                'token_type' => 'Bearer',
+                'user_id' => $user->id
             ], 200);
+
 
         } catch (\Throwable $th) {
             return response()->json([
@@ -111,6 +122,7 @@ class AuthController extends Controller
                 'message' => 'User Logged In Successfully',
                 'token' => $tokenResult,
                 'token_type' => 'Bearer',
+                'user' => $user
             ], 200);
 
         } catch (\Throwable $th) {
@@ -144,15 +156,16 @@ class AuthController extends Controller
 
             $user = User::where('phone', $request->phone)->first();
 
-            do {
-                $code = rand(100000, 999999);
+            $code = generate_code_user($user);
 
-                $code_exist = User::where('phone_verified', $code)->first();
-            } while ( $code_exist != null);
 
-            $user->update([
-                'phone_verified' => $code,
-            ]);
+            try {
+
+                send_sms($request->phone, $code);
+
+            } catch (\Throwable $th) {
+                // print($th);
+            }
 
             return response()->json([
                 'status' => true,
@@ -177,6 +190,7 @@ class AuthController extends Controller
         try {
             $validatePhone = Validator::make($request->all(),
             [
+                'user_id' => 'required',
                 'codePhone' => 'required',
             ]);
 
@@ -188,19 +202,31 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user = User::where('phone_verified', $request->codePhone)->first();
+            $user = User::findOrfail($request->user_id);
 
-            if ($user) {
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found'
+                ], 401);
+            }
+
+
+            if ($user->phone_verified == $request->codePhone) {
+                $user->update([
+                    'is_active' => 1,
+                    'phone_verified' => null
+                ]);
+
                 return response()->json([
                     'status' => true,
-                    'message' => 'Code Phone Successfully',
-                    'codePhone' => $request->codePhone,
+                    'message' => 'Account Successfully actived',
+                    'user_id' => $user->id
                 ], 200);
             }else{
                 return response()->json([
                     'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validatePhone->errors()
+                    'message' => 'Provided verification code is incorrect',
                 ], 401);
             }
 
@@ -222,8 +248,8 @@ class AuthController extends Controller
         try {
             $validatePassword = Validator::make($request->all(),
             [
-                'password' => $this->passwordRules(),
-                'codePhone' => 'required'
+                'password' => 'required',
+                'user_id' => 'required'
             ]);
 
             if($validatePassword->fails()){
@@ -234,24 +260,30 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user = User::where('phone_verified', $request->codePhone)->first();
+            $user = User::find($request->user_id);
 
-            if ($user) {
-                $user->update([
-                    'password' => Hash::make($request->password),
-                    'phone_verified' => null
-                ]);
-                return response()->json([
-                    'status' => true,
-                    'message' => 'Password Successfully Update',
-                ], 200);
-            }else{
+            if (!$user) {
                 return response()->json([
                     'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validatePassword->errors()
+                    'message' => 'User not found'
                 ], 401);
             }
+
+            if (!$user->is_active) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Inactive account'
+                ], 401);
+            }
+
+            $user->update([
+                'password' => Hash::make($request->password),
+            ]);
+            return response()->json([
+                'status' => true,
+                'message' => 'Password Successfully Updated',
+            ], 200);
+
 
         } catch (\Throwable $th) {
             return response()->json([

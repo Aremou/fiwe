@@ -19,7 +19,7 @@ class CreateInterestCentersTable extends Migration
             $table->text('description');
             $table->string('lat');
             $table->string('long');
-            $table->foreignId('user_id')->nullable()->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('interest_center_category_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->boolean('is_active');
             $table->softDeletes();

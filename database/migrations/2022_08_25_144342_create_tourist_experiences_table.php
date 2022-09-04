@@ -17,7 +17,6 @@ class CreateTouristExperiencesTable extends Migration
             $table->id();
             $table->string('label');
             $table->longText('description');
-            $table->string('image');
             $table->string('city');
             $table->decimal('unit_price');
             $table->softDeletes();

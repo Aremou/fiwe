@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\InterestCenterController;
 use App\Http\Controllers\Api\InterestCenterCategoryController;
+use App\Http\Controllers\Api\TouristExperienceController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +37,17 @@ Route::post('/auth/reset-password', [AuthController::class, 'resetPasswordUser']
 
 
 
-Route::get('/interest-center-category', [InterestCenterCategoryController::class, 'index']);
+Route::get('/interest-center-categories', [InterestCenterCategoryController::class, 'index']);
 
-Route::get('/interest-center', [InterestCenterController::class, 'index']);
+Route::get('/interest-centers', [InterestCenterController::class, 'index']);
+
+
+//tourist Experiences
+
+Route::get('/tourist-experiences', [TouristExperienceController::class, 'index']);
+
+Route::get('/tourist-experience/{table}/{id}/images', [TouristExperienceController::class, 'all_image']);
+
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -46,24 +55,33 @@ Route::middleware('auth:sanctum')->group(function () {
     //Interest Center Category
     Route::post('/interest-center-category', [InterestCenterCategoryController::class, 'store']);
 
-    Route::get('/interest-center-category/{id}/show', [InterestCenterCategoryController::class, 'show']);
+    Route::put('/interest-center-category/{id}', [InterestCenterCategoryController::class, 'update']);
 
-    Route::put('/interest-center-category/{id}/update', [InterestCenterCategoryController::class, 'update']);
-
-    Route::delete('/interest-center-category/{id}/destroy', [InterestCenterCategoryController::class, 'destroy']);
+    Route::delete('/interest-center-category/{id}', [InterestCenterCategoryController::class, 'destroy']);
 
 
     //Interest Center
     Route::post('/interest-center', [InterestCenterController::class, 'store']);
 
-    Route::get('/interest-center/user/{id}', [InterestCenterController::class, 'interest_center_user']);
+    Route::put('/interest-center/{id}', [InterestCenterController::class, 'update']);
 
-    Route::get('/interest-center/admin', [InterestCenterController::class, 'interest_center_admin']);
+    Route::delete('/interest-center/{id}', [InterestCenterController::class, 'destroy']);
 
-    Route::get('/interest-center/{id}/show', [InterestCenterController::class, 'show']);
+    //tourist Experiences
+    Route::post('/tourist-experience/{id}/payment', [TouristExperienceController::class, 'payment']);
 
-    Route::put('/interest-center/{id}/update', [InterestCenterController::class, 'update']);
 
-    Route::delete('/interest-center/{id}/destroy', [InterestCenterController::class, 'destroy']);
+    Route::post('/tourist-experience', [TouristExperienceController::class, 'store']);
+
+    Route::middleware('admin')->group(function () {
+
+
+        //tourist Experiences
+
+        Route::put('/tourist-experience/{id}', [TouristExperienceController::class, 'update']);
+
+        Route::delete('/tourist-experience/{id}', [TouristExperienceController::class, 'destroy']);
+
+    });
 
 });
