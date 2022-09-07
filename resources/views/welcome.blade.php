@@ -20,7 +20,7 @@
                 <div class="mini-stat-icon">
                     <i class="fa fa-shopping-bag float-right mb-0"></i>
                 </div>
-                <h6 class="text-uppercase mb-0">étudiants</h6>
+                <h6 class="text-uppercase mb-0">Expériences Touristiques</h6>
             </div>
             <div class="card-body">
                 <div class="border-bottom pb-4">
@@ -41,7 +41,7 @@
                 <div class="mini-stat-icon">
                     <i class="fa fa-address-book-o float-right mb-0"></i>
                 </div>
-                <h6 class="text-uppercase mb-0">Filière</h6>
+                <h6 class="text-uppercase mb-0">Centres D'intérêts</h6>
             </div>
             <div class="card-body">
                 <div class="border-bottom pb-4">
@@ -61,7 +61,7 @@
                 <div class="mini-stat-icon">
                     <i class="fa fa-address-book-o float-right mb-0"></i>
                 </div>
-                <h6 class="text-uppercase mb-0">Niveau</h6>
+                <h6 class="text-uppercase mb-0">Sites recommandés</h6>
             </div>
             <div class="card-body">
                 <div class="border-bottom pb-4">
@@ -81,7 +81,7 @@
                 <div class="mini-stat-icon">
                     <i class="fa fa-paper-plane-o float-right mb-0"></i>
                 </div>
-                <h6 class="text-uppercase mb-0">Inscrits</h6>
+                <h6 class="text-uppercase mb-0">Utilisateurs</h6>
             </div>
             <div class="card-body">
                 <div class="border-bottom pb-4">

@@ -6,13 +6,13 @@ use Twilio\Rest\Client;
 if (!function_exists('background_color_1')) {
     function background_color_1()
     {
-        return 'background-color: #54CC96';
+        return 'background-color: #FC6307';
     }
 }
 if (!function_exists('color_1')) {
     function color_1()
     {
-        return 'color: #54CC96';
+        return 'color: #FC6307';
     }
 }
 

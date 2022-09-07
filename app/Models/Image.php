@@ -12,12 +12,8 @@ class Image extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'contextid',
-        'component',
         'filename',
         'is_active',
-        'user_id',
-        'deleted_at',
         'created_at',
         'updated_at',
     ];

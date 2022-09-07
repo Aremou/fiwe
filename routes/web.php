@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\InterestCenterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 
@@ -25,4 +26,6 @@ Route::middleware([
     })->name('verif-access');
 
     Route::get('/', [HomeController::class, 'home'])->name('dashboard');
+
+    Route::get('interest-centers', [InterestCenterController::class, 'index'])->name('root_interest_centers');
 });

@@ -292,4 +292,95 @@ class AuthController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Send Sms Code
+     * @param Request $request
+     * @return User
+     */
+    public function sendSmsCode(Request $request)
+    {
+        try {
+            $validateUserId = Validator::make($request->all(),
+            [
+                'user_id' => 'required',
+            ]);
+
+            if($validateUserId->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validateUserId->errors()
+                ], 401);
+            }
+
+            $user = User::findOrfail($request->user_id);
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found'
+                ], 401);
+            }
+
+            $code = generate_code_user($user);
+
+            try {
+
+                send_sms($user->phone, $code);
+
+            } catch (\Throwable $th) {
+
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Code Send Successfully',
+                'user_id' => $user->id
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Logout the user
+     * @param Request $request
+     */
+    public function logoutUser(Request $request)
+    {
+        try {
+            $validateUserId = Validator::make($request->all(),
+            [
+                'user_id' => 'required',
+            ]);
+
+            if($validateUserId->fails()){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'validation error',
+                    'errors' => $validateUserId->errors()
+                ], 401);
+            }
+
+            $user = Auth::user()->tokens()->delete();
+
+            if ($user) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'User Logout Successfully'
+                ], 200);
+            }
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
 }
