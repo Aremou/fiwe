@@ -37,6 +37,8 @@ Route::post('/auth/reset-password', [AuthController::class, 'resetPasswordUser']
 
 Route::post('/send-sms-code', [AuthController::class, 'sendSmsCode']);
 
+Route::post('/user/upload-image', [UserController::class, 'uploadImage']);
+
 
 
 
@@ -57,8 +59,6 @@ Route::get('/tourist-experience/{table}/{id}/images', [TouristExperienceControll
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/auth/logout', [AuthController::class, 'logoutUser']);
-
-    Route::post('/user/upload-image', [UserController::class, 'uploadImage']);
 
     //Interest Center Category
     Route::post('/interest-center-category', [InterestCenterCategoryController::class, 'store']);

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
+use SplFileInfo;
 use App\Models\User;
+use App\Models\Image;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -23,6 +26,8 @@ class UserController extends Controller
             $validate = Validator::make($request->all(),
             [
                 'user_id'=> 'required',
+                'type'=> 'required|',
+                'file'=> 'required|image|mimes:png,jpg,jpeg',
             ]);
 
             if($validate->fails()){
@@ -30,10 +35,10 @@ class UserController extends Controller
                     'status' => false,
                     'message' => 'validation error',
                     'errors' => $validate->errors()
-                ], 401);
+                ], 404);
             }
 
-            $user = User::find($request->id);
+            $user = User::find($request->user_id);
 
             if (!$user) {
                 return response()->json([
@@ -42,18 +47,64 @@ class UserController extends Controller
                 ], 401);
             }
 
-            $tourist_experience->update([
-                'label' => $request->label,
-                'description' => $request->description,
-                'city' => $request->city,
-                'unit_price' => $request->unit_price,
-            ]);
+            $fieldname = $request->type == "profil" ? 'profil_image_id' : 'cover_image_id';
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Expérience touristique modifiée avec succès',
-            ], 200);
+            if ($user[$fieldname] == null) {
 
+                $save = save_image($fieldname, $request->file, $request->file('file'), $user);
+
+                if( $save!= null){
+
+                    $user->update([
+                        $fieldname => $save->id,
+                    ]);
+
+                    return response()->json([
+                        'status' => true,
+                        'message' => 'Image uploaded',
+                    ], 200);
+
+                }else{
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Image not uploaded'
+                    ], 500);
+                }
+            }else{
+                $image = Image::find($user[$fieldname]);
+
+                if (!$image) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => 'Image not found'
+                    ], 404);
+                }else{
+
+                    delete_image_path(picture_path_user(), $image->filename);
+
+                    $image->delete();
+
+                    $save = save_image($fieldname, $request->file, $request->file('file'), $user);
+
+                    if($save != null){
+
+                        $user->update([
+                            $fieldname => $save->id,
+                        ]);
+
+                        return response()->json([
+                            'status' => true,
+                            'message' => 'Image uploaded',
+                        ], 200);
+
+                    }else{
+                        return response()->json([
+                            'status' => false,
+                            'message' => 'Image not uploaded'
+                        ], 500);
+                    }
+                }
+            }
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,

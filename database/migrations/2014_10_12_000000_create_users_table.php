@@ -23,8 +23,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('phone_verified')->nullable();
             $table->string('password')->nullable();
-            $table->integer('profil_picture_id')->nullable();
-            $table->integer('cover_picture_id')->nullable();
+            $table->integer('profil_image_id')->nullable();
+            $table->integer('cover_image_id')->nullable();
             $table->rememberToken();
             $table->foreignId('current_team_id')->nullable();
             $table->string('profile_photo_path', 2048)->nullable();

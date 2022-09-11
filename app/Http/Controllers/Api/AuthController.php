@@ -72,6 +72,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'User Created Successfully',
                 'user_id' => $user->id
             ], 200);
@@ -115,6 +116,29 @@ class AuthController extends Controller
             }
 
             $user = User::where('phone', $request->phone)->first();
+
+            $account = Account::where('user_id', $user->id)->first();
+
+            $user_data = array(
+                'id'=> $user->id,
+                'fullname'=> $account->fullname,
+                'birth_date'=> $account->birth_date,
+                'civility'=> $account->civility,
+                'birth_country'=> $account->birth_country,
+                'profession'=> $account->profession,
+                'badge'=> $account->badge,
+                'game_level'=> $account->game_level,
+                'experience_count'=> $account->experience_count,
+                'certify'=> $account->certify,
+                'phone'=> $user->phone,
+                'email'=> $user->email,
+                'role'=> $user->role,
+                'is_active'=> $user->is_active,
+                'profil_image_id' => asset(picture_path_user() . select_image($user->profil_image_id)->filename),
+                'cover_image_id' => asset(picture_path_user() . select_image($user->cover_image_id)->filename),
+                'is_active'=> 1
+            );
+
             $tokenResult = $user->createToken('authToken')->plainTextToken;
 
             return response()->json([
@@ -122,7 +146,7 @@ class AuthController extends Controller
                 'message' => 'User Logged In Successfully',
                 'token' => $tokenResult,
                 'token_type' => 'Bearer',
-                'user' => $user
+                'user' => $user_data,
             ], 200);
 
         } catch (\Throwable $th) {
@@ -155,6 +179,13 @@ class AuthController extends Controller
             }
 
             $user = User::where('phone', $request->phone)->first();
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'User not found'
+                ], 401);
+            }
 
             $code = generate_code_user($user);
 
@@ -202,7 +233,7 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user = User::findOrfail($request->user_id);
+            $user = User::find($request->user_id);
 
             if (!$user) {
                 return response()->json([

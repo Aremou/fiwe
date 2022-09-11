@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\User;
+use App\Models\Image;
 use Twilio\Rest\Client;
+use App\Models\InterestCenterCategory;
 
 if (!function_exists('background_color_1')) {
     function background_color_1()
@@ -35,7 +37,6 @@ if (!function_exists('generate_code_user')) {
     }
 }
 
-
 if (!function_exists('send_sms')) {
     function send_sms($phone, $code)
     {
@@ -45,5 +46,19 @@ if (!function_exists('send_sms')) {
                     'from' => getenv("TWILIO_NUMBER"),
                     'body' => $code
                 ]);
+    }
+}
+
+if (!function_exists('j_json_decode')) {
+    function j_json_decode($value, $lang)
+    {
+        return json_decode($value)->$lang ?? '';
+    }
+}
+
+if (!function_exists('interest_center_categories')) {
+    function interest_center_categories()
+    {
+        return InterestCenterCategory::all();
     }
 }
