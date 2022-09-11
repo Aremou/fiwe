@@ -127,7 +127,16 @@ class TouristExperienceController extends Controller
                 ], 401);
             }
 
-            TouristExperience::findOrfail($id)->update([
+            $tourist_experience = TouristExperience::findOrfail($id);
+
+            if (!$tourist_experience) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Tourist Experience not found'
+                ], 401);
+            }
+
+            $tourist_experience->update([
                 'label' => $request->label,
                 'description' => $request->description,
                 'city' => $request->city,

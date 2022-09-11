@@ -314,7 +314,7 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            $user = User::findOrfail($request->user_id);
+            $user = User::find($request->user_id);
 
             if (!$user) {
                 return response()->json([

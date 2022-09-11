@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\Account;
-use App\Models\AdminAccount;
+use App\Models\User;
+use App\Models\Image;
 use App\Models\InterestCenterCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,24 +20,25 @@ class InterestCenter extends Model
         'user_id',
         'interest_center_category_id',
         'is_active',
+        'picture',
         'deleted_at',
         'created_at',
         'updated_at'
     ];
 
-    public function admin_account()
+    public function user()
     {
-        return $this->belongsTo(AdminAccount::class);
-    }
-
-    public function account()
-    {
-        return $this->belongsTo(Account::class);
+        return $this->belongsTo(User::class);
     }
 
     public function interest_center_category()
     {
         return $this->belongsTo(InterestCenterCategory::class);
+    }
+
+    public function images()
+    {
+        return $this->belongsToMany(Image::class);
     }
 
 }

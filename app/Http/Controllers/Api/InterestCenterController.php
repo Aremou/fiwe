@@ -111,7 +111,16 @@ class InterestCenterController extends Controller
                 ], 401);
             }
 
-            InterestCenter::findOrfail($id)->update([
+            $interest_center = InterestCenter::findOrfail($id);
+
+            if (!$interest_center) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Interest Center not found'
+                ], 401);
+            }
+
+            $interest_center->update([
                 'label' => $request->label,
                 'description' => $request->description,
                 'lat' => $request->lat,
@@ -142,7 +151,16 @@ class InterestCenterController extends Controller
     {
         try {
 
-            InterestCenter::findOrfail($id)->delete();
+            $interest_center = InterestCenter::findOrfail($id);
+
+            if (!$interest_center) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Interest Center not found'
+                ], 401);
+            }
+
+            $interest_center->delete();
 
             return response()->json([
                 'status' => true,

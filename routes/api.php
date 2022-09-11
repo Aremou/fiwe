@@ -3,9 +3,10 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\InterestCenterController;
-use App\Http\Controllers\Api\InterestCenterCategoryController;
 use App\Http\Controllers\Api\TouristExperienceController;
+use App\Http\Controllers\Api\InterestCenterCategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,9 @@ Route::get('/tourist-experience/{table}/{id}/images', [TouristExperienceControll
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/auth/logout', [AuthController::class, 'logoutUser']);
+
+    Route::post('/user/upload-image', [UserController::class, 'uploadImage']);
+
     //Interest Center Category
     Route::post('/interest-center-category', [InterestCenterCategoryController::class, 'store']);
 

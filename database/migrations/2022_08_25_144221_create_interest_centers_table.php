@@ -15,12 +15,13 @@ class CreateInterestCentersTable extends Migration
     {
         Schema::create('interest_centers', function (Blueprint $table) {
             $table->id();
-            $table->string('label');
-            $table->text('description');
-            $table->string('lat');
-            $table->string('long');
+            $table->json('label');
+            $table->json('description');
+            $table->decimal('lat', 20, 10);
+            $table->decimal('long', 20, 10);
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('interest_center_category_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
+            $table->integer('picture')->nullable();
             $table->boolean('is_active');
             $table->softDeletes();
             $table->timestamps();

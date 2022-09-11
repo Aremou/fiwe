@@ -16,7 +16,10 @@ class InterestCenterCategoryController extends Controller
      */
     public function index()
     {
-        return InterestCenterCategory::all();
+        return response()->json([
+            'status' => true,
+            'items' => InterestCenterCategory::all(),
+        ]);
     }
 
     /**
@@ -31,7 +34,7 @@ class InterestCenterCategoryController extends Controller
             //Validated
             $validate = Validator::make($request->all(),
             [
-                'label' => 'required',
+                'label_fr' => 'required',
             ]);
 
             if($validate->fails()){
@@ -42,8 +45,10 @@ class InterestCenterCategoryController extends Controller
                 ], 401);
             }
 
+            $label['fr'] = $request->label;
+
             InterestCenterCategory::create([
-                'label' => $request->label,
+                'label' => json_encode($label['fr']),
             ]);
 
             return response()->json([
@@ -83,7 +88,16 @@ class InterestCenterCategoryController extends Controller
                 ], 401);
             }
 
-            InterestCenterCategory::findOrfail($id)->update([
+            $interest_center_category = InterestCenterCategory::findOrfail($id);
+
+            if (!$interest_center_category) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Interest Center category not found'
+                ], 401);
+            }
+
+            $interest_center_category->update([
                 'label' => $request->label,
             ]);
 
@@ -110,7 +124,16 @@ class InterestCenterCategoryController extends Controller
     {
         try {
 
-            InterestCenterCategory::findOrfail($id)->delete();
+            $interest_center_category = InterestCenterCategory::findOrfail($id);
+
+            if (!$interest_center_category) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Interest Center category not found'
+                ], 401);
+            }
+
+            $interest_center_category->delete();
 
             return response()->json([
                 'status' => true,

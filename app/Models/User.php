@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Account;
 use App\Models\AdminAccount;
+use App\Models\InterestCenter;
 use Laravel\Sanctum\HasApiTokens;
 use Laravel\Jetstream\HasProfilePhoto;
 use Illuminate\Notifications\Notifiable;
@@ -80,5 +81,10 @@ class User extends Authenticatable
     public function admin_accounts()
     {
         return $this->hasMany(AdminAccount::class);
+    }
+
+    public function interest_centers()
+    {
+        return $this->hasMany(InterestCenter::class);
     }
 }

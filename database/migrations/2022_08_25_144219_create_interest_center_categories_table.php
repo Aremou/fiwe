@@ -15,7 +15,7 @@ class CreateInterestCenterCategoriesTable extends Migration
     {
         Schema::create('interest_center_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('label');
+            $table->json('label');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -15,9 +15,9 @@ class CreateTouristExperiencesTable extends Migration
     {
         Schema::create('tourist_experiences', function (Blueprint $table) {
             $table->id();
-            $table->string('label');
-            $table->longText('description');
-            $table->string('city');
+            $table->json('label');
+            $table->json('description');
+            $table->json('city');
             $table->decimal('unit_price');
             $table->softDeletes();
             $table->timestamps();
