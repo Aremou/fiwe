@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Activity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TouristExperience extends Model
 {
@@ -16,8 +17,17 @@ class TouristExperience extends Model
         'description',
         'city',
         'unit_price',
+        'picture',
+        'latitude',
+        'longitude',
+        'is_active',
         'deleted_at',
         'created_at',
         'updated_at',
     ];
+
+    public function activities()
+    {
+        return $this->belongsToMany(Activity::class);
+    }
 }

@@ -17,8 +17,8 @@ class CreateInterestCentersTable extends Migration
             $table->id();
             $table->json('label');
             $table->json('description');
-            $table->decimal('lat', 20, 10);
-            $table->decimal('long', 20, 10);
+            $table->integer('latitude');
+            $table->integer('longitude');
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->foreignId('interest_center_category_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->integer('picture')->nullable();

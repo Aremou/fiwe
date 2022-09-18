@@ -45,20 +45,23 @@ Route::post('/user/upload-image', [UserController::class, 'uploadImage']);
 
 Route::get('/interest-center-categories', [InterestCenterCategoryController::class, 'index']);
 
+
+//Interest Center
 Route::get('/interest-centers', [InterestCenterController::class, 'index']);
+
+Route::get('interest-center/{id}/gallery', [InterestCenterController::class, 'gallery']);
 
 
 //tourist Experiences
-
 Route::get('/tourist-experiences', [TouristExperienceController::class, 'index']);
-
-Route::get('/tourist-experience/{table}/{id}/images', [TouristExperienceController::class, 'all_image']);
 
 
 
 Route::middleware('auth:sanctum')->group(function () {
 
+    //Authentication
     Route::post('/auth/logout', [AuthController::class, 'logoutUser']);
+
 
     //Interest Center Category
     Route::post('/interest-center-category', [InterestCenterCategoryController::class, 'store']);
@@ -73,23 +76,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/interest-center/{id}', [InterestCenterController::class, 'update']);
 
-    Route::delete('/interest-center/{id}', [InterestCenterController::class, 'destroy']);
+    Route::post('interest-center/{id}/upload-image', [InterestCenterController::class, 'uploadImage']);
+
+    Route::delete('interest-center/{id}/delete-image-gallery/{image}', [InterestCenterController::class, 'deleteImageGallery']);
+
+    Route::post('interest-center/{id}/like', [InterestCenterController::class, 'like']);
+
+    // Route::delete('/interest-center/{id}', [InterestCenterController::class, 'destroy']);
+
 
     //tourist Experiences
     Route::post('/tourist-experience/{id}/payment', [TouristExperienceController::class, 'payment']);
-
-
-    Route::post('/tourist-experience', [TouristExperienceController::class, 'store']);
-
-    Route::middleware('admin')->group(function () {
-
-
-        //tourist Experiences
-
-        Route::put('/tourist-experience/{id}', [TouristExperienceController::class, 'update']);
-
-        Route::delete('/tourist-experience/{id}', [TouristExperienceController::class, 'destroy']);
-
-    });
 
 });

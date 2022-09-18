@@ -18,6 +18,7 @@ class InterestCenterCategoryController extends Controller
     {
         return response()->json([
             'status' => true,
+            'code' => self::OK,
             'items' => InterestCenterCategory::all(),
         ]);
     }
@@ -34,12 +35,13 @@ class InterestCenterCategoryController extends Controller
             //Validated
             $validate = Validator::make($request->all(),
             [
-                'label_fr' => 'required',
+                'label' => 'required',
             ]);
 
             if($validate->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validate->errors()
                 ], 401);
@@ -48,11 +50,12 @@ class InterestCenterCategoryController extends Controller
             $label['fr'] = $request->label;
 
             InterestCenterCategory::create([
-                'label' => json_encode($label['fr']),
+                'label' => json_encode($label),
             ]);
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'Catégorie crée avec succès',
             ], 200);
 
@@ -83,26 +86,31 @@ class InterestCenterCategoryController extends Controller
             if($validate->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validate->errors()
                 ], 401);
             }
 
-            $interest_center_category = InterestCenterCategory::findOrfail($id);
+            $interest_center_category = InterestCenterCategory::find($id);
 
             if (!$interest_center_category) {
                 return response()->json([
                     'status' => false,
+                    'code' => self::NOT_FOUND,
                     'message' => 'Interest Center category not found'
                 ], 401);
             }
 
+            $label['fr'] = $request->label;
+
             $interest_center_category->update([
-                'label' => $request->label,
+                'label' => json_encode($label),
             ]);
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'Catégorie modifiée avec succès',
             ], 200);
 
@@ -124,11 +132,12 @@ class InterestCenterCategoryController extends Controller
     {
         try {
 
-            $interest_center_category = InterestCenterCategory::findOrfail($id);
+            $interest_center_category = InterestCenterCategory::find($id);
 
             if (!$interest_center_category) {
                 return response()->json([
                     'status' => false,
+                    'code' => self::NOT_FOUND,
                     'message' => 'Interest Center category not found'
                 ], 401);
             }
@@ -137,6 +146,7 @@ class InterestCenterCategoryController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'Catégorie supprimée avec succès',
             ], 200);
 

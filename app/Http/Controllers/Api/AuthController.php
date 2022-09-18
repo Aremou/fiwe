@@ -39,6 +39,7 @@ class AuthController extends Controller
             if($validateUser->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validateUser->errors()
                 ], 401);
@@ -103,6 +104,7 @@ class AuthController extends Controller
             if($validateUser->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validateUser->errors()
                 ], 401);
@@ -134,8 +136,8 @@ class AuthController extends Controller
                 'email'=> $user->email,
                 'role'=> $user->role,
                 'is_active'=> $user->is_active,
-                'profil_image_id' => asset(picture_path_user() . select_image($user->profil_image_id)->filename),
-                'cover_image_id' => asset(picture_path_user() . select_image($user->cover_image_id)->filename),
+                'profil_image_id' => select_image($user->profil_image_id) ? asset(picture_path_user() . select_image($user->profil_image_id)->filename) : null,
+                'cover_image_id' => select_image($user->cover_image_id) ? asset(picture_path_user() . select_image($user->cover_image_id)->filename) : null,
                 'is_active'=> 1
             );
 
@@ -143,6 +145,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'User Logged In Successfully',
                 'token' => $tokenResult,
                 'token_type' => 'Bearer',
@@ -173,6 +176,7 @@ class AuthController extends Controller
             if($validatePhone->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validatePhone->errors()
                 ], 401);
@@ -183,12 +187,12 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
+                    'code' => self::NOT_FOUND,
                     'message' => 'User not found'
                 ], 401);
             }
 
             $code = generate_code_user($user);
-
 
             try {
 
@@ -200,6 +204,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'User Logged In Successfully',
             ], 200);
 
@@ -228,6 +233,7 @@ class AuthController extends Controller
             if($validatePhone->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validatePhone->errors()
                 ], 401);
@@ -238,6 +244,7 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
+                    'code' => self::NOT_FOUND,
                     'message' => 'User not found'
                 ], 401);
             }
@@ -251,12 +258,14 @@ class AuthController extends Controller
 
                 return response()->json([
                     'status' => true,
+                    'code' => self::OK,
                     'message' => 'Account Successfully actived',
                     'user_id' => $user->id
                 ], 200);
             }else{
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'Provided verification code is incorrect',
                 ], 401);
             }
@@ -296,6 +305,7 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
+                    'code' => self::NOT_FOUND,
                     'message' => 'User not found'
                 ], 401);
             }
@@ -303,6 +313,7 @@ class AuthController extends Controller
             if (!$user->is_active) {
                 return response()->json([
                     'status' => false,
+                    'code' => self::ACCOUNT_NOT_VERIFIED,
                     'message' => 'Inactive account'
                 ], 401);
             }
@@ -312,6 +323,7 @@ class AuthController extends Controller
             ]);
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'Password Successfully Updated',
             ], 200);
 
@@ -340,6 +352,7 @@ class AuthController extends Controller
             if($validateUserId->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validateUserId->errors()
                 ], 401);
@@ -350,6 +363,7 @@ class AuthController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
+                    'code' => self::NOT_FOUND,
                     'message' => 'User not found'
                 ], 401);
             }
@@ -366,6 +380,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'Code Send Successfully',
                 'user_id' => $user->id
             ], 200);
@@ -393,6 +408,7 @@ class AuthController extends Controller
             if($validateUserId->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validateUserId->errors()
                 ], 401);
@@ -403,6 +419,7 @@ class AuthController extends Controller
             if ($user) {
                 return response()->json([
                     'status' => true,
+                    'code' => self::OK,
                     'message' => 'User Logout Successfully'
                 ], 200);
             }

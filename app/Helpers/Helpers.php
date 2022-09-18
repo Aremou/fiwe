@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Models\Image;
 use Twilio\Rest\Client;
+use App\Models\Geolocation;
 use App\Models\InterestCenterCategory;
 
 if (!function_exists('background_color_1')) {
@@ -60,5 +61,38 @@ if (!function_exists('interest_center_categories')) {
     function interest_center_categories()
     {
         return InterestCenterCategory::all();
+    }
+}
+
+if (!function_exists('create_location')) {
+    function create_location($alt)
+    {
+        $location = Geolocation::create([
+            'altitude' => $alt,
+        ]);
+
+        return $location;
+    }
+}
+
+if (!function_exists('edit_location')) {
+    function edit_location($id, $alt)
+    {
+        $location = Geolocation::findOrfail($id);
+
+        $location->update([
+            'altitude' => $alt,
+        ]);
+
+        return $location;
+    }
+}
+
+if (!function_exists('show_location')) {
+    function show_location($id)
+    {
+        $location = Geolocation::findOrfail($id);
+
+        return $location;
     }
 }

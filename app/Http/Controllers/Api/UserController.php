@@ -51,7 +51,7 @@ class UserController extends Controller
 
             if ($user[$fieldname] == null) {
 
-                $save = save_image($fieldname, $request->file, $request->file('file'), $user);
+                $save = save_image('users', $request->file, $request->file('file'), $user);
 
                 if( $save!= null){
 
@@ -84,7 +84,7 @@ class UserController extends Controller
 
                     $image->delete();
 
-                    $save = save_image($fieldname, $request->file, $request->file('file'), $user);
+                    $save = save_image('users', $request->file, $request->file('file'), $user);
 
                     if($save != null){
 

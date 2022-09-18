@@ -4,13 +4,13 @@ use App\Models\Image;
 use Illuminate\Support\Str;
 
 if (!function_exists('save_image')) {
-    function save_image($fieldname, $file1, $file2, $user)
+    function save_image($dir, $file1, $file2, $user)
     {
         $extension = new SplFileInfo($file1->getClientOriginalName());
 
         $filename = Str::random(16);
 
-        $filepath = $file2->storeAs('user', $filename . '.' . $extension->getExtension(), 'public');
+        $filepath = $file2->storeAs($dir, $filename . '.' . $extension->getExtension(), 'public');
 
         if($filepath != null){
             $picture = Image::create([

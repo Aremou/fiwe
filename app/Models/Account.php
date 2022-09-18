@@ -21,7 +21,6 @@ class Account extends Model
         'badge',
         'game_level',
         'experience_count',
-        'cover_picture',
         'certify',
         'user_id',
         'deleted_at',

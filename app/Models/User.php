@@ -87,4 +87,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(InterestCenter::class);
     }
+
+    public function like_interest_centers()
+    {
+        return $this->belongsToMany(InterestCenter::class);
+    }
 }

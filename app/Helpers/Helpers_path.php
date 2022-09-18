@@ -6,7 +6,12 @@ use App\Models\Image;
 if (!function_exists('select_image')) {
     function select_image($id)
     {
-        return Image::findOrfail($id);
+        $image = Image::find($id);
+        if ($image) {
+            return $image ;
+        }else{
+            return null;
+        }
     }
 }
 
@@ -27,7 +32,14 @@ if (!function_exists('galerie_path_interest_center')) {
 if (!function_exists('picture_path_user')) {
     function picture_path_user()
     {
-        return "storage/user/";
+        return "storage/users/";
+    }
+}
+
+if (!function_exists('image_path_tourist_experience')) {
+    function image_path_tourist_experience()
+    {
+        return "storage/tourist-experiences/";
     }
 }
 

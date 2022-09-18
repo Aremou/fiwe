@@ -21,181 +21,28 @@ class TouristExperienceController extends Controller
      */
     public function index()
     {
-        return TouristExperience::where('is_active', 1)->get();
-    }
+        $tourist_experiences = TouristExperience::where('is_active', 1)->get();
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
+        // $t_tourist_experiences = [];
 
-        try {
-            //Validated
-            $validate = Validator::make($request->all(),
-            [
-                'label'=> 'required',
-                'description'=> 'required',
-                'image'=> 'required',
-                'city'=> 'required',
-                'unit_price'=> 'required',
-            ]);
+        foreach ($tourist_experiences as $key => $tourist_experience){
+            $tourist_experience->picture = select_image($tourist_experience->picture) != null ? asset(image_path_tourist_experience() . select_image($tourist_experience->picture)->filename) : null;
 
-            if($validate->fails()){
-                return response()->json([
-                    'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validate->errors()
-                ], 401);
-            }
+            $tourist_experience->with('activities')->get();
 
-            $touristExperience = TouristExperience::create([
-                'label' => $request->label,
-                'description' => $request->description,
-                'city' => $request->city,
-                'unit_price' => $request->unit_price,
-            ]);
+            $tourist_experience->activities = $tourist_experience->activities;
 
-            $extension = new SplFileInfo($request->image->getClientOriginalName());
-
-            $filename = Str::random(16);
-
-            $filepath = $request->file('image')->storeAs('tourist_experiences', $filename . '.' . $extension->getExtension(), 'public');
-
-            if($filepath != null){
-                Image::create([
-                    'contextid' => $touristExperience->id,
-                    'component' => 'tourist_experiences',
-                    'filename' => $filename. '.' . $extension->getExtension(),
-                    'is_active' => 1,
-                    'user_id' => auth()->user()->id
-                ]);
-            }
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Expérience touristique ajoutée avec succès',
-            ], 200);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
+            $t_tourist_experiences[$key] = $tourist_experience;
         }
 
+        return response()->json([
+            'status' => true,
+            'code' => self::OK,
+            'items' => $t_tourist_experiences,
+        ]);
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        return TouristExperience::findOrfail($id);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        try {
-            //Validated
-            $validate = Validator::make($request->all(),
-            [
-                'label'=> 'required',
-                'description'=> 'required',
-                'city'=> 'required',
-                'unit_price'=> 'required',
-            ]);
-
-            if($validate->fails()){
-                return response()->json([
-                    'status' => false,
-                    'message' => 'validation error',
-                    'errors' => $validate->errors()
-                ], 401);
-            }
-
-            $tourist_experience = TouristExperience::findOrfail($id);
-
-            if (!$tourist_experience) {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Tourist Experience not found'
-                ], 401);
-            }
-
-            $tourist_experience->update([
-                'label' => $request->label,
-                'description' => $request->description,
-                'city' => $request->city,
-                'unit_price' => $request->unit_price,
-            ]);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Expérience touristique modifiée avec succès',
-            ], 200);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        try {
-
-            TouristExperience::findOrfail($id)->delete();
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Expérience touristique supprimée avec succès',
-            ], 200);
-
-        } catch (\Throwable $th) {
-            return response()->json([
-                'status' => false,
-                'message' => $th->getMessage()
-            ], 500);
-        }
-    }
-
-        /**
-     * Select all image.
-     *
-     * @param  int  $id
-     * @param  string  $table
-     */
-
-    public function all_image($table, $id){
-
-        $images = Image::where('contextid', $id)->where('component', $table)->get();
-
-        return $images;
-    }
-
-        /**
      * Insert payment resource from storage.
      *
      * @param  \Illuminate\Http\Request  $request

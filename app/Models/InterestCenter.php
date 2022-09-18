@@ -15,8 +15,8 @@ class InterestCenter extends Model
     protected $fillable = [
         'label',
         'description',
-        'lat',
-        'long',
+        'latitude',
+        'longitude',
         'user_id',
         'interest_center_category_id',
         'is_active',
@@ -39,6 +39,11 @@ class InterestCenter extends Model
     public function images()
     {
         return $this->belongsToMany(Image::class);
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
     }
 
 }
