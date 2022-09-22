@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use SplFileInfo;
 use App\Models\User;
 use App\Models\Image;
+use App\Models\Account;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -12,6 +13,40 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+
+    public function user(Request $request){
+
+        $user = $request->user();
+
+        $account = Account::where('user_id', $user->id)->first();
+
+        $user_data = array(
+            'id'=> $user->id,
+            'fullname'=> $account->fullname,
+            'birth_date'=> $account->birth_date,
+            'civility'=> $account->civility,
+            'birth_country'=> $account->birth_country,
+            'profession'=> $account->profession,
+            'badge'=> $account->badge,
+            'game_level'=> $account->game_level,
+            'experience_count'=> $account->experience_count,
+            'certify'=> $account->certify,
+            'phone'=> $user->phone,
+            'email'=> $user->email,
+            'role'=> $user->role,
+            'is_active'=> $user->is_active,
+            'profile_image_url' => select_image($user->profil_image_id) ? asset(picture_path_user() . select_image($user->profil_image_id)->filename) : null,
+            'cover_image_url' => select_image($user->cover_image_id) ? asset(picture_path_user() . select_image($user->cover_image_id)->filename) : null,
+            'is_active'=> 1
+        );
+
+        return response()->json([
+            'status' => true,
+            'code' => self::OK,
+            'message' => 'User Info',
+            'user' => $user_data,
+        ], 200);
+    }
         /**
      * Update the specified resource in storage.
      *

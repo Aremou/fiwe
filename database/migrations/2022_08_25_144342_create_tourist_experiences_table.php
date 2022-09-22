@@ -19,9 +19,8 @@ class CreateTouristExperiencesTable extends Migration
             $table->json('description');
             $table->string('city');
             $table->decimal('unit_price');
-            $table->string('picture');
-            $table->integer('latitude');
-            $table->integer('longitude');
+            $table->integer('image_id');
+            $table->integer('geolocation_id');
             $table->boolean('is_active');
             $table->softDeletes();
             $table->timestamps();

@@ -15,9 +15,10 @@ class CreateGeolocationsTable extends Migration
     {
         Schema::create('geolocations', function (Blueprint $table) {
             $table->id();
-            $table->string('altitude', 40, 20);
+            $table->string('label')->nullable();
+            $table->decimal('latitude', 40, 20);
+            $table->decimal('longitude', 40, 20);
             $table->timestamps();
-            $table->double('latitude', 0, 0);
         });
     }
 

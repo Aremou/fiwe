@@ -21,7 +21,11 @@ class InterestCenterController extends Controller
         $interest_centers = InterestCenter::where('is_active', 1)->get();
 
         foreach ($interest_centers as $key => $interest_center){
-            $interest_center->picture = select_image($interest_center->picture) != null ? asset(image_path_interest_center() . select_image($interest_center->picture)->filename) : null;
+            $interest_center->image_url = select_image($interest_center->image_id) != null ? asset(image_path_interest_center() . select_image($interest_center->image_id)->filename) : null;
+
+            $interest_center->interest_center_category;
+
+            unset($interest_center->image_id, $interest_center->interest_center_category_id);
 
             $interest_center->with('users')->get();
 
@@ -34,7 +38,7 @@ class InterestCenterController extends Controller
         return response()->json([
             'status' => true,
             'code' => self::OK,
-            'items' => $t_interest_centers,
+            'items' => $t_interest_centers ?? $interest_centers,
         ]);
     }
 
@@ -55,7 +59,7 @@ class InterestCenterController extends Controller
                 'description'=> 'required',
                 'latitude' => 'required',
                 'longitude' => 'required',
-                'picture' => 'required|mimes:png,jpg,jpeg',
+                'image_id' => 'required|mimes:png,jpg,jpeg',
                 'interest_center_category'=> 'required',
             ]);
 
@@ -71,15 +75,14 @@ class InterestCenterController extends Controller
             $label['fr'] = $request->label;
             $description['fr'] = $request->description;
 
-            $save = save_image('interest-centers/pictures', $request->picture, $request->file('picture'), auth()->user());
+            $save = save_image('interest-centers/pictures', $request->image_id, $request->file('image_id'), auth()->user());
 
             if( $save != null){
                 InterestCenter::create([
                     'label' => json_encode($label),
                     'description' => json_encode($description),
-                    'latitude' => create_location($request->latitude)->id,
-                    'longitude' => create_location($request->longitude)->id,
-                    'picture' => $save->id,
+                    'geolocation_id' => create_location($request->latitude, $request->longitude)->id,
+                    'image_id' => $save->id,
                     'user_id' => auth()->user()->id,
                     'interest_center_category_id' => $request->interest_center_category,
                     'is_active' => auth()->user()->role == "user" ? 0 : 1
@@ -152,8 +155,7 @@ class InterestCenterController extends Controller
             $interest_center->update([
                 'label' => json_encode($label),
                 'description' => json_encode($description),
-                'latitude' => edit_location($interest_center->latitude, $request->latitude)->id,
-                'longitude' => edit_location($interest_center->longitude, $request->longitude)->id,
+                'geolocation_id' => edit_location($interest_center->geolocation_id, $request->latitude, $request->longitude)->id,
                 'interest_center_category_id' => $request->interest_center_category,
             ]);
 
@@ -216,14 +218,14 @@ class InterestCenterController extends Controller
             }
 
             if($request->type == "picture"){
-                if ($interest_center->picture == null) {
+                if ($interest_center->image_id == null) {
 
                     $save = save_image('interest-centers/pictures', $request->file, $request->file('file'), $user);
 
                     if( $save!= null){
 
                         $interest_center->update([
-                            'picture' => $save->id,
+                            'image_id' => $save->id,
                         ]);
 
                         return response()->json([
@@ -240,7 +242,7 @@ class InterestCenterController extends Controller
                         ], 500);
                     }
                 }else{
-                    $image = Image::find($interest_center->picture);
+                    $image = Image::find($interest_center->image_id);
 
                     if (!$image) {
                         return response()->json([
@@ -259,7 +261,7 @@ class InterestCenterController extends Controller
                         if($save != null){
 
                             $interest_center->update([
-                                'picture' => $save->id,
+                                'image_id' => $save->id,
                             ]);
 
                             return response()->json([
@@ -329,11 +331,19 @@ class InterestCenterController extends Controller
 
             $interest_center->with('images')->get();
 
+            foreach ($interest_center->images as $key => $image) {
+                $t_interest_center_gallery[$key] = [
+                    'id' => $image->id,
+                    'url' => asset(galerie_path_interest_center() . $image->filename),
+                    'created_at' => $image->created_at,
+                    'updated_at' => $image->updated_at,
+                ];
+            }
+
             return response()->json([
                 'status' => true,
                 'code' => self::OK,
-                'path' =>galerie_path_interest_center(),
-                'items' => $interest_center->images,
+                'items' => $t_interest_center_gallery
             ]);
 
 
@@ -396,10 +406,14 @@ class InterestCenterController extends Controller
                 ], 401);
             }
 
-            $image = Image::find($interest_center->picture);
+            $image = Image::find($interest_center->image_id);
+
 
             // dd($image);
             if ($image != null) {
+
+                delete_image_path(image_path_interest_center(), $image->filename);
+
                 $image->delete();
             }
 
@@ -409,6 +423,8 @@ class InterestCenterController extends Controller
                 $image = Image::find($img->id);
 
                 if ($image) {
+                    delete_image_path(image_path_interest_center(), $image->filename);
+
                     $image->delete();
                 }
             }

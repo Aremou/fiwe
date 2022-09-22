@@ -15,12 +15,11 @@ class InterestCenter extends Model
     protected $fillable = [
         'label',
         'description',
-        'latitude',
-        'longitude',
-        'user_id',
+        'geolocation_id',
         'interest_center_category_id',
+        'user_id',
         'is_active',
-        'picture',
+        'image_id',
         'deleted_at',
         'created_at',
         'updated_at'

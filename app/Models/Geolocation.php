@@ -10,7 +10,9 @@ class Geolocation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'altitude',
+        'label',
+        'latitude',
+        'longitude',
         'created_at',
         'updated_at',
     ];

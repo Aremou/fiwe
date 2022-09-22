@@ -19,9 +19,9 @@ use App\Http\Controllers\Api\InterestCenterCategoryController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 //Authentification
 
@@ -62,6 +62,8 @@ Route::middleware('auth:sanctum')->group(function () {
     //Authentication
     Route::post('/auth/logout', [AuthController::class, 'logoutUser']);
 
+    Route::get('/user', [UserController::class, 'user']);
+
 
     //Interest Center Category
     Route::post('/interest-center-category', [InterestCenterCategoryController::class, 'store']);
@@ -82,7 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('interest-center/{id}/like', [InterestCenterController::class, 'like']);
 
-    // Route::delete('/interest-center/{id}', [InterestCenterController::class, 'destroy']);
+    Route::delete('/interest-center/{id}', [InterestCenterController::class, 'destroy']);
 
 
     //tourist Experiences

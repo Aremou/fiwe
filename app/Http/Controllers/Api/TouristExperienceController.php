@@ -38,7 +38,7 @@ class TouristExperienceController extends Controller
         return response()->json([
             'status' => true,
             'code' => self::OK,
-            'items' => $t_tourist_experiences,
+            'items' => $t_tourist_experiences ?? $tourist_experiences,
         ]);
     }
 

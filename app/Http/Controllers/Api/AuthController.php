@@ -136,8 +136,8 @@ class AuthController extends Controller
                 'email'=> $user->email,
                 'role'=> $user->role,
                 'is_active'=> $user->is_active,
-                'profil_image_id' => select_image($user->profil_image_id) ? asset(picture_path_user() . select_image($user->profil_image_id)->filename) : null,
-                'cover_image_id' => select_image($user->cover_image_id) ? asset(picture_path_user() . select_image($user->cover_image_id)->filename) : null,
+                'profile_image_url' => select_image($user->profil_image_id) ? asset(picture_path_user() . select_image($user->profil_image_id)->filename) : null,
+                'cover_image_url' => select_image($user->cover_image_id) ? asset(picture_path_user() . select_image($user->cover_image_id)->filename) : null,
                 'is_active'=> 1
             );
 

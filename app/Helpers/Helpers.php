@@ -65,10 +65,12 @@ if (!function_exists('interest_center_categories')) {
 }
 
 if (!function_exists('create_location')) {
-    function create_location($alt)
+    function create_location($lat, $lng, $label = null)
     {
         $location = Geolocation::create([
-            'altitude' => $alt,
+            'label' => $label,
+            'latitude' => $lat,
+            'longitude' => $lng,
         ]);
 
         return $location;
@@ -76,12 +78,13 @@ if (!function_exists('create_location')) {
 }
 
 if (!function_exists('edit_location')) {
-    function edit_location($id, $alt)
+    function edit_location($id, $lat, $lng)
     {
         $location = Geolocation::findOrfail($id);
 
         $location->update([
-            'altitude' => $alt,
+            'latitude' => $lat,
+            'longitude' => $lng,
         ]);
 
         return $location;
