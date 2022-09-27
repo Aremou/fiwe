@@ -20,6 +20,7 @@ class CreateTouristExperiencesTable extends Migration
             $table->string('city');
             $table->decimal('unit_price');
             $table->integer('image_id');
+            $table->integer('video_id');
             $table->integer('geolocation_id');
             $table->boolean('is_active');
             $table->softDeletes();

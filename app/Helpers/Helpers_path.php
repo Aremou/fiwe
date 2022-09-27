@@ -1,12 +1,12 @@
 <?php
 
-use App\Models\Image;
+use App\Models\Medias;
 
 
 if (!function_exists('select_image')) {
     function select_image($id)
     {
-        $image = Image::find($id);
+        $image = Medias::find($id);
         if ($image) {
             return $image ;
         }else{

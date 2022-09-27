@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\User;
-use App\Models\Image;
+use App\Models\Medias;
 use Illuminate\Http\Request;
 use App\Models\InterestCenter;
 use App\Http\Controllers\Controller;
@@ -20,18 +20,26 @@ class InterestCenterController extends Controller
     {
         $interest_centers = InterestCenter::where('is_active', 1)->get();
 
+        $t_interest_centers = [];
+
         foreach ($interest_centers as $key => $interest_center){
-            $interest_center->image_url = select_image($interest_center->image_id) != null ? asset(image_path_interest_center() . select_image($interest_center->image_id)->filename) : null;
-
-            $interest_center->interest_center_category;
-
-            unset($interest_center->image_id, $interest_center->interest_center_category_id);
+            $interest_center->image_id = select_image($interest_center->image_id) != null ? asset(image_path_interest_center() . select_image($interest_center->image_id)->filename) : null;
 
             $interest_center->with('users')->get();
 
             $interest_center->likes = count($interest_center->users);
 
-            $t_interest_centers[$key] = $interest_center;
+            $t_interest_centers[$key] = [
+                'id' => $interest_center->id,
+                'label' => $interest_center->label,
+                'description' => $interest_center->description,
+                'image_url' => $interest_center->image_id,
+                'latitude' => show_location($interest_center->geolocation_id)->latitude,
+                'longitude' => show_location($interest_center->geolocation_id)->longitude,
+                'user_id' => $interest_center->user_id,
+                'likes' => $interest_center->likes,
+                'interest_center_category_id' => $interest_center->interest_center_category_id
+            ];
 
         }
 
@@ -59,7 +67,7 @@ class InterestCenterController extends Controller
                 'description'=> 'required',
                 'latitude' => 'required',
                 'longitude' => 'required',
-                'image_id' => 'required|mimes:png,jpg,jpeg',
+                'file' => 'required|mimes:png,jpg,jpeg',
                 'interest_center_category'=> 'required',
             ]);
 
@@ -75,7 +83,7 @@ class InterestCenterController extends Controller
             $label['fr'] = $request->label;
             $description['fr'] = $request->description;
 
-            $save = save_image('interest-centers/pictures', $request->image_id, $request->file('image_id'), auth()->user());
+            $save = save_image('interest-centers/pictures', $request->file, $request->file('file'), auth()->user());
 
             if( $save != null){
                 InterestCenter::create([
@@ -161,6 +169,7 @@ class InterestCenterController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'Centre d\'interêt modifié avec succès',
             ], 200);
 
@@ -186,8 +195,8 @@ class InterestCenterController extends Controller
             $validate = Validator::make($request->all(),
             [
                 'interest_center_id' => 'required',
-                'type'=> 'required|',
-                'file'=> 'required|image|mimes:png,jpg,jpeg',
+                'type'=> 'required',
+                'file'=> 'required|mimes:png,jpg,jpeg',
             ]);
 
             if($validate->fails()){
@@ -200,6 +209,7 @@ class InterestCenterController extends Controller
             }
 
             $interest_center = InterestCenter::find($request->interest_center_id);
+
             $user = User::find(auth()->user()->id);
 
             if (!$interest_center) {
@@ -242,7 +252,7 @@ class InterestCenterController extends Controller
                         ], 500);
                     }
                 }else{
-                    $image = Image::find($interest_center->image_id);
+                    $image = Medias::find($interest_center->image_id);
 
                     if (!$image) {
                         return response()->json([
@@ -279,13 +289,15 @@ class InterestCenterController extends Controller
                         }
                     }
                 }
-            }else {
+            } else {
+
 
                 $save = save_image('interest-centers/galeries', $request->file, $request->file('file'), $user);
 
+
                 if( $save!= null){
 
-                    $interest_center->images()->attach($save->id);
+                    $interest_center->medias()->attach($save->id);
 
                     return response()->json([
                         'status' => true,
@@ -329,12 +341,14 @@ class InterestCenterController extends Controller
                 ], 401);
             }
 
-            $interest_center->with('images')->get();
+            $interest_center->with('medias')->get();
 
-            foreach ($interest_center->images as $key => $image) {
+            $t_interest_center_gallery = [];
+
+            foreach ($interest_center->medias as $key => $image) {
                 $t_interest_center_gallery[$key] = [
                     'id' => $image->id,
-                    'url' => asset(galerie_path_interest_center() . $image->filename),
+                    'image_url' => asset(galerie_path_interest_center() . $image->filename),
                     'created_at' => $image->created_at,
                     'updated_at' => $image->updated_at,
                 ];
@@ -360,7 +374,7 @@ class InterestCenterController extends Controller
 
         try {
 
-            $image = Image::find($image);
+            $image = Medias::find($image);
 
             if (!$image) {
                 return response()->json([
@@ -369,6 +383,8 @@ class InterestCenterController extends Controller
                     'message' => 'Image  not found'
                 ], 401);
             }
+
+            delete_image_path(galerie_path_interest_center(), $image->filename);
 
             $image->delete();
 
@@ -406,10 +422,8 @@ class InterestCenterController extends Controller
                 ], 401);
             }
 
-            $image = Image::find($interest_center->image_id);
+            $image = Medias::find($interest_center->image_id);
 
-
-            // dd($image);
             if ($image != null) {
 
                 delete_image_path(image_path_interest_center(), $image->filename);
@@ -417,13 +431,13 @@ class InterestCenterController extends Controller
                 $image->delete();
             }
 
-            $interest_center->with('images')->get();
+            $interest_center->with('medias')->get();
 
             foreach ($interest_center->images as  $img) {
-                $image = Image::find($img->id);
+                $image = Medias::find($img->id);
 
                 if ($image) {
-                    delete_image_path(image_path_interest_center(), $image->filename);
+                    delete_image_path(galerie_path_interest_center(), $image->filename);
 
                     $image->delete();
                 }

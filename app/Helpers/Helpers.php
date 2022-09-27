@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use App\Models\Image;
 use Twilio\Rest\Client;
 use App\Models\Geolocation;
 use App\Models\InterestCenterCategory;
@@ -94,8 +93,19 @@ if (!function_exists('edit_location')) {
 if (!function_exists('show_location')) {
     function show_location($id)
     {
-        $location = Geolocation::findOrfail($id);
+        $location = Geolocation::find($id);
 
-        return $location;
+        if($location){
+            return $location;
+        }else {
+            return null ;
+        }
+    }
+}
+
+if (!function_exists('use_disponibility')) {
+    function use_disponibility($disponibility)
+    {
+        return $disponibility->with('tourist_experiences')->get();
     }
 }

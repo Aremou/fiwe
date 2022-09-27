@@ -23,16 +23,24 @@ class TouristExperienceController extends Controller
     {
         $tourist_experiences = TouristExperience::where('is_active', 1)->get();
 
-        // $t_tourist_experiences = [];
+        $t_tourist_experiences = [];
 
         foreach ($tourist_experiences as $key => $tourist_experience){
-            $tourist_experience->picture = select_image($tourist_experience->picture) != null ? asset(image_path_tourist_experience() . select_image($tourist_experience->picture)->filename) : null;
+            $tourist_experience->image_id = select_image($tourist_experience->image_id) != null ? asset(image_path_tourist_experience() . select_image($tourist_experience->image_id)->filename) : null;
 
             $tourist_experience->with('activities')->get();
 
-            $tourist_experience->activities = $tourist_experience->activities;
-
-            $t_tourist_experiences[$key] = $tourist_experience;
+            $t_tourist_experiences[$key] = [
+                'id' => $tourist_experience->id,
+                'label' => $tourist_experience->label,
+                'description' => $tourist_experience->description,
+                'city' => $tourist_experience->city,
+                'unit_price' => $tourist_experience->unit_price,
+                'image_url' => $tourist_experience->image_id,
+                'latitude' => show_location($tourist_experience->geolocation_id)->latitude,
+                'longitude' => show_location($tourist_experience->geolocation_id)->longitude,
+                'activities' => $tourist_experience->activities
+            ];
         }
 
         return response()->json([
@@ -65,6 +73,7 @@ class TouristExperienceController extends Controller
             if($validate->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validate->errors()
                 ], 401);
@@ -84,6 +93,7 @@ class TouristExperienceController extends Controller
 
             return response()->json([
                 'status' => true,
+                'code' => self::OK,
                 'message' => 'Payement éffectué avec succès',
             ], 200);
 

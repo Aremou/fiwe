@@ -68,7 +68,7 @@ class AuthController extends Controller
                 send_sms($request->phone, $code);
 
             } catch (\Throwable $th) {
-                // print($th);
+                // ......
             }
 
             return response()->json([
@@ -113,6 +113,7 @@ class AuthController extends Controller
             if(!Auth::attempt(['phone' => $request->phone, 'password' => $request->password, 'is_active' => 1])){
                 return response()->json([
                     'status' => false,
+                    'code' => self::AUTH_FAILED,
                     'message' => 'Phone & Password does not match with our record.',
                 ], 401);
             }
@@ -199,13 +200,13 @@ class AuthController extends Controller
                 send_sms($request->phone, $code);
 
             } catch (\Throwable $th) {
-                // print($th);
+                // ....
             }
 
             return response()->json([
                 'status' => true,
                 'code' => self::OK,
-                'message' => 'User Logged In Successfully',
+                'message' => 'Code Send Your Phone Successfully',
             ], 200);
 
         } catch (\Throwable $th) {
@@ -295,6 +296,7 @@ class AuthController extends Controller
             if($validatePassword->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validatePassword->errors()
                 ], 401);

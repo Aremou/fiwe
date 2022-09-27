@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Image;
+use App\Models\Medias;
 use Illuminate\Support\Str;
 
 if (!function_exists('save_image')) {
@@ -12,12 +12,15 @@ if (!function_exists('save_image')) {
 
         $filepath = $file2->storeAs($dir, $filename . '.' . $extension->getExtension(), 'public');
 
+
         if($filepath != null){
-            $picture = Image::create([
+            $picture = Medias::create([
                 'filename' => $filename. '.' . $extension->getExtension(),
+                'mimetype' => $file1->getClientMimeType(),
                 'is_active' => 1,
                 'user_id' => $user->id
             ]);
+
         }else{
             $picture = null;
         }

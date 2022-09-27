@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use SplFileInfo;
 use App\Models\User;
-use App\Models\Image;
+use App\Models\Medias;
 use App\Models\Account;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -37,7 +37,6 @@ class UserController extends Controller
             'is_active'=> $user->is_active,
             'profile_image_url' => select_image($user->profil_image_id) ? asset(picture_path_user() . select_image($user->profil_image_id)->filename) : null,
             'cover_image_url' => select_image($user->cover_image_id) ? asset(picture_path_user() . select_image($user->cover_image_id)->filename) : null,
-            'is_active'=> 1
         );
 
         return response()->json([
@@ -61,13 +60,14 @@ class UserController extends Controller
             $validate = Validator::make($request->all(),
             [
                 'user_id'=> 'required',
-                'type'=> 'required|',
-                'file'=> 'required|image|mimes:png,jpg,jpeg',
+                'type'=> 'required',
+                'file'=> 'required|mimes:png,jpg,jpeg',
             ]);
 
             if($validate->fails()){
                 return response()->json([
                     'status' => false,
+                    'code' => self::INVALID_DATA,
                     'message' => 'validation error',
                     'errors' => $validate->errors()
                 ], 404);
@@ -78,6 +78,7 @@ class UserController extends Controller
             if (!$user) {
                 return response()->json([
                     'status' => false,
+                    'code' => self::NOT_FOUND,
                     'message' => 'User not found'
                 ], 401);
             }
@@ -96,21 +97,24 @@ class UserController extends Controller
 
                     return response()->json([
                         'status' => true,
+                        'code' => self::OK,
                         'message' => 'Image uploaded',
                     ], 200);
 
                 }else{
                     return response()->json([
                         'status' => false,
+                        'code' => self::NOT_ACCESSIBLE,
                         'message' => 'Image not uploaded'
                     ], 500);
                 }
             }else{
-                $image = Image::find($user[$fieldname]);
+                $image = Medias::find($user[$fieldname]);
 
                 if (!$image) {
                     return response()->json([
                         'status' => false,
+                        'code' => self::NOT_FOUND,
                         'message' => 'Image not found'
                     ], 404);
                 }else{
@@ -129,12 +133,14 @@ class UserController extends Controller
 
                         return response()->json([
                             'status' => true,
+                            'code' => self::OK,
                             'message' => 'Image uploaded',
                         ], 200);
 
                     }else{
                         return response()->json([
                             'status' => false,
+                            'code' => self::NOT_ACCESSIBLE,
                             'message' => 'Image not uploaded'
                         ], 500);
                     }
