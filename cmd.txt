@@ -1,0 +1,7 @@
+composer install
+
+composer dumpautoload -o
+
+php artisan migrate:fresh --seed
+
+php artisan serve
