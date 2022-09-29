@@ -15,8 +15,8 @@ class CreateDisponibilitiesTable extends Migration
     {
         Schema::create('disponibilities', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('start_date');
-            $table->timestamp('end_date');
+            $table->timestamp('start_date')->useCurrent();
+            $table->timestamp('end_date')->useCurrent();
             $table->integer('count')->nullable();
             $table->timestamps();
         });

@@ -65,7 +65,7 @@ class AuthController extends Controller
 
             try {
 
-                send_sms($request->phone, $code);
+                send_code_by_mail($request->email, $code);
 
             } catch (\Throwable $th) {
                 // ......
@@ -169,21 +169,21 @@ class AuthController extends Controller
     public function forgetPasswordUser(Request $request)
     {
         try {
-            $validatePhone = Validator::make($request->all(),
+            $validateEmail = Validator::make($request->all(),
             [
-                'phone' => 'required',
+                'email' => 'required',
             ]);
 
-            if($validatePhone->fails()){
+            if($validateEmail->fails()){
                 return response()->json([
                     'status' => false,
                     'code' => self::INVALID_DATA,
                     'message' => 'validation error',
-                    'errors' => $validatePhone->errors()
+                    'errors' => $validateEmail->errors()
                 ], 401);
             }
 
-            $user = User::where('phone', $request->phone)->first();
+            $user = User::where('email', $request->email)->first();
 
             if (!$user) {
                 return response()->json([
@@ -197,7 +197,7 @@ class AuthController extends Controller
 
             try {
 
-                send_sms($request->phone, $code);
+                send_code_by_mail($request->email, $code);
 
             } catch (\Throwable $th) {
                 // ....
@@ -206,6 +206,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'code' => self::OK,
+                'user_id' => $user->id,
                 'message' => 'Code Send Your Phone Successfully',
             ], 200);
 
@@ -374,7 +375,7 @@ class AuthController extends Controller
 
             try {
 
-                send_sms($user->phone, $code);
+                send_code_by_mail($user->email, $code);
 
             } catch (\Throwable $th) {
 

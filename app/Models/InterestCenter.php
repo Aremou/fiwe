@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\User;
-use App\Models\Image;
+use App\Models\Medias;
 use App\Models\InterestCenterCategory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,9 +35,9 @@ class InterestCenter extends Model
         return $this->belongsTo(InterestCenterCategory::class);
     }
 
-    public function images()
+    public function medias()
     {
-        return $this->belongsToMany(Image::class);
+        return $this->belongsToMany(Medias::class);
     }
 
     public function users()

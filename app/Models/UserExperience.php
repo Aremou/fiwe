@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
+use App\Models\TouristExperience;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class UserExperience extends Model
 {
@@ -23,4 +25,13 @@ class UserExperience extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function tourist_experience()
+    {
+        return $this->belongsTo(TouristExperience::class);
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

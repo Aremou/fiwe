@@ -3,6 +3,8 @@
 use App\Models\User;
 use Twilio\Rest\Client;
 use App\Models\Geolocation;
+use App\Mail\SendCodeByEmail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\InterestCenterCategory;
 
 if (!function_exists('background_color_1')) {
@@ -46,6 +48,13 @@ if (!function_exists('send_sms')) {
                     'from' => getenv("TWILIO_NUMBER"),
                     'body' => $code
                 ]);
+    }
+}
+
+if (!function_exists('send_code_by_mail')) {
+    function send_code_by_mail($mail, $code)
+    {
+        Mail::to($mail)->send(new SendCodeByEmail($code));
     }
 }
 

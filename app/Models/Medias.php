@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use App\Models\InterestCenter;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class Image extends Model
+class Medias extends Model
 {
     use HasFactory;
 
@@ -15,6 +13,7 @@ class Image extends Model
         'filename',
         'is_active',
         'user_id',
+        'mimetype',
         'created_at',
         'updated_at',
     ];

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Activity;
+use App\Models\Disponibility;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,6 +19,7 @@ class TouristExperience extends Model
         'city',
         'unit_price',
         'image_id',
+        'video_id',
         'geolocation_id',
         'is_active',
         'deleted_at',
@@ -28,5 +30,14 @@ class TouristExperience extends Model
     public function activities()
     {
         return $this->belongsToMany(Activity::class);
+    }
+    public function disponibilities()
+    {
+        return $this->belongsToMany(Disponibility::class);
+    }
+
+    public function user_experiences()
+    {
+        return $this->hasMany(UserExperience::class);
     }
 }
