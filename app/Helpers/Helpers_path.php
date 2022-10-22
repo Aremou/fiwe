@@ -46,6 +46,11 @@ if (!function_exists('image_path_tourist_experience')) {
 if (!function_exists('delete_image_path')) {
     function delete_image_path($path, $name)
     {
-        return unlink(public_path() . "/" . $path . $name);
+        $path = public_path() . "/" . $path . $name;
+
+        if(file_exists($path)){
+            return unlink($path);
+        }
+
     }
 }

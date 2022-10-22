@@ -64,6 +64,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', [UserController::class, 'user']);
 
+    Route::post('/user/update-phone', [UserController::class, 'updatePhone']);
+
+    Route::post('/user/update-password', [UserController::class, 'updatePassword']);
+
+    Route::post('/user/update-information', [UserController::class, 'updateInformation']);
+
     Route::get('/user/meta', [UserController::class, 'meta']);
 
     Route::get('/user/contributions', [UserController::class, 'contributions']);
@@ -98,8 +104,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // Espace Me
-    Route::post('/user/payement-statement', [UserController::class, 'payement_statement']);
-    Route::post('/about-us', [OtherController::class, 'about_us']);
-    Route::post('/privacy-policy', [OtherController::class, 'privacy_policy']);
-    Route::post('/terms-of-use', [OtherController::class, 'terms_of_use']);
+    Route::post('/user/payement-statement', [UserController::class, 'payementStatement']);
+
+    Route::get('/about-us', [OtherController::class, 'about_us']);
+
+    Route::get('/privacy-policy', [OtherController::class, 'privacy_policy']);
+
+    Route::get('/terms-of-use', [OtherController::class, 'terms_of_use']);
 });

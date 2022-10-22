@@ -118,3 +118,18 @@ if (!function_exists('use_disponibility')) {
         return $disponibility->with('tourist_experiences')->get();
     }
 }
+
+if (!function_exists('slug_privacy_policy')) {
+    function slug_privacy_policy()
+    {
+        return "privacy-policy";
+    }
+}
+
+if (!function_exists('slug_terms_of_use')) {
+    function slug_terms_of_use()
+    {
+        return "terms-of-use";
+    }
+}
+

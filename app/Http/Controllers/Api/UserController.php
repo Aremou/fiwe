@@ -8,9 +8,11 @@ use App\Models\Medias;
 use App\Models\Account;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\InterestCenter;
 use App\Models\UserExperience;
 use App\Http\Controllers\Controller;
-use App\Models\InterestCenter;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\UserNotificationSetting;
 use Illuminate\Support\Facades\Validator;
 
@@ -158,7 +160,6 @@ class UserController extends Controller
         }
     }
 
-
     public function meta(Request $request)
     {
 
@@ -175,12 +176,12 @@ class UserController extends Controller
                 'like_mention'=> $user_notifications_settings->like_mention ? true : false,
                 'comments'=> $user_notifications_settings->comments ? true : false,
                 'discussions_answers'=> $user_notifications_settings->discussions_answers ? true : false,
-                'program_reminder'=> $user_notifications_settings->program_reminder ? true : false,
+                'program_reminder'=> $user_notifications_settings->program_reminder,
                 'new_tourist_experience'=> $user_notifications_settings->new_tourist_experience ? true : false,
                 'nearby_players'=> $user_notifications_settings->nearby_players ? true : false,
                 'share_experiences'=> $user_notifications_settings->share_experiences ? true : false,
-                'repeat_unread_notifications'=> $user_notifications_settings->repeat_unread_notifications ? true : false,
-                'user_id'=> $user_notifications_settings->user_id ? true : false,
+                'repeat_unread_notifications'=> $user_notifications_settings->repeat_unread_notifications,
+                'user_id'=> $user_notifications_settings->user_id,
             ];
         }
 
@@ -212,7 +213,8 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function contributions(Request $request){
+    public function contributions(Request $request)
+    {
 
         $user = $request->user();
 
@@ -227,7 +229,7 @@ class UserController extends Controller
 
     }
 
-    public function payement_statement(Request $request){
+    public function payementStatement(Request $request){
         $user = $request->user();
 
         $user_experiences = UserExperience::where('user_id', $user->id)->get();
@@ -239,4 +241,150 @@ class UserController extends Controller
             'payement_statement' => $user_experiences,
         ], 200);
     }
+
+    public function updatePhone(Request $request){
+
+        $user = $request->user();
+
+        try {
+            $validatePhone = Validator::make($request->all(),
+            [
+                'phone' => 'required',
+            ]);
+
+            if($validatePhone->fails()){
+                return response()->json([
+                    'status' => false,
+                    'code' => self::INVALID_DATA,
+                    'message' => 'validation error',
+                    'errors' => $validatePhone->errors()
+                ], 401);
+            }
+
+            $code = generate_code_user($user);
+
+            try {
+
+                send_code_by_mail($user->email, $code);
+
+            } catch (\Throwable $th) {
+                // ....
+            }
+
+            return response()->json([
+                'status' => true,
+                'code' => self::OK,
+                'user_id' => $user->id,
+                'message' => 'Code Send Your Phone Successfully',
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+
+    }
+
+    public function updateInformation(Request $request){
+
+        $user = $request->user();
+
+        $validateUser = Validator::make($request->all(),
+        [
+            'fullname' => 'required',
+            'birth_date' => 'required',
+            'civility' => 'required',
+            'birth_country' => 'required',
+            'profession' => 'required',
+            'pseudo' => 'required',
+            'email' => 'required|unique:users,email,'.$user->id,
+        ]);
+
+        if($validateUser->fails()){
+            return response()->json([
+                'status' => false,
+                'code' => self::INVALID_DATA,
+                'message' => 'validation error',
+                'errors' => $validateUser->errors()
+            ], 401);
+        }
+
+        $account = Account::where('user_id', $user->id)->first();
+
+        $account->update([
+            'fullname' => $request->fullname,
+            'birth_date' => $request->birth_date,
+            'civility' => $request->civility,
+            'birth_country' => $request->birth_country,
+            'profession' => $request->profession,
+        ]);
+
+        $user->update([
+            'name' => $request->pseudo,
+            'email' => $request->email,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'code' => self::OK,
+            'message' => 'User Updated Successfully',
+        ], 200);
+
+    }
+
+    public function updatePassword(Request $request)
+    {
+
+        $user = $request->user();
+
+        $validatePassword = Validator::make($request->all(),
+        [
+            'old_password' => 'required',
+            'password' => 'required',
+        ]);
+
+        if($validatePassword->fails()){
+            return response()->json([
+                'status' => false,
+                'code' => self::INVALID_DATA,
+                'message' => 'validation error',
+                'errors' => $validatePassword->errors()
+            ], 401);
+        }
+
+        try {
+            if((Hash::check($request->old_password, Auth::user()->password)) == false){
+                return response()->json([
+                    'status' => false,
+                    'code' => self::INVALID_DATA,
+                    'message' => 'Check your old password.',
+                ], 401);
+            }elseif ((Hash::check($request->password, Auth::user()->password)) == true) {
+                return response()->json([
+                    'status' => false,
+                    'code' => self::INVALID_DATA,
+                    'message' => 'Please enter a password which is not similar then current password.',
+                ], 401);
+            }else{
+                $user->update([
+                    'password' => Hash::make($request->password)
+                ]);
+
+                return response()->json([
+                    'status' => false,
+                    'code' => self::OK,
+                    'message' => 'Password Updated successfully.',
+                ], 401);
+            }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+
 }
