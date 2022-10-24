@@ -244,11 +244,15 @@ class InterestCenterController extends Controller
                     $save = update_image('interest-centers/pictures', $request->file, $request->file('file'), $image);
 
                     if($save != null){
-                        
+
                         return response()->json([
                             'status' => true,
                             'code' => self::OK,
-                            'image_url' => asset(image_path_interest_center() . $image->filename),
+                            'image' => array(
+                                'id' => $image->id,
+                                'image_url' => asset(image_path_interest_center() . $image->filename),
+                                'user_id' => $image->user_id
+                            ),
                             'message' => 'Image uploaded',
                         ], 200);
 
@@ -272,7 +276,11 @@ class InterestCenterController extends Controller
                     return response()->json([
                         'status' => true,
                         'code' => self::OK,
-                        'image_url' => asset(galerie_path_interest_center() . $save->filename),
+                        'image' => array(
+                            'id' => $save->id,
+                            'image_url' => asset(galerie_path_interest_center() . $save->filename),
+                            'user_id' => $save->user_id
+                        ),
                         'message' => 'Image uploaded',
                     ], 200);
 

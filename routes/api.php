@@ -41,8 +41,6 @@ Route::post('/send-sms-code', [AuthController::class, 'sendSmsCode']);
 Route::post('/user/upload-image', [UserController::class, 'uploadImage']);
 
 
-
-
 Route::get('/interest-center-categories', [InterestCenterCategoryController::class, 'index']);
 
 
@@ -55,6 +53,13 @@ Route::get('/interest-center/{id}/gallery', [InterestCenterController::class, 'g
 //tourist Experiences
 Route::get('/tourist-experiences', [TouristExperienceController::class, 'index']);
 
+
+
+// Route::get('/about-us', [OtherController::class, 'about_us']);
+
+Route::get('/privacy-policy', [OtherController::class, 'privacy_policy']);
+
+Route::get('/terms-of-use', [OtherController::class, 'terms_of_use']);
 
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -106,9 +111,4 @@ Route::middleware('auth:sanctum')->group(function () {
     // Espace Me
     Route::post('/user/payement-statement', [UserController::class, 'payementStatement']);
 
-    Route::get('/about-us', [OtherController::class, 'about_us']);
-
-    Route::get('/privacy-policy', [OtherController::class, 'privacy_policy']);
-
-    Route::get('/terms-of-use', [OtherController::class, 'terms_of_use']);
 });

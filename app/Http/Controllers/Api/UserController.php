@@ -127,15 +127,9 @@ class UserController extends Controller
 
                     delete_image_path(picture_path_user(), $image->filename);
 
-                    $image->delete();
-
-                    $save = save_image('users', $request->file, $request->file('file'), $user);
+                    $save = update_image('users', $request->file, $request->file('file'), $image);
 
                     if($save != null){
-
-                        $user->update([
-                            $fieldname => $save->id,
-                        ]);
 
                         return response()->json([
                             'status' => true,
@@ -171,7 +165,7 @@ class UserController extends Controller
 
         if($user_notifications_settings != null){
             $t_user_notifications_settings = [
-                'id'=> $user_notifications_settings->id ? true : false,
+                'id'=> $user_notifications_settings->id,
                 'new_post'=> $user_notifications_settings->new_post ? true : false,
                 'like_mention'=> $user_notifications_settings->like_mention ? true : false,
                 'comments'=> $user_notifications_settings->comments ? true : false,
@@ -199,8 +193,8 @@ class UserController extends Controller
         }
 
         $meta = array(
-            'interest_center_like' => array($interest_centers),
-            'tourist_experience_like' => array($tourist_experiences),
+            'interest_center_like' => $interest_centers,
+            'tourist_experience_like' => $tourist_experiences,
             'user_notifications_settings' => $t_user_notifications_settings,
         );
 
@@ -242,7 +236,8 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function updatePhone(Request $request){
+    public function updatePhone(Request $request)
+    {
 
         $user = $request->user();
 
@@ -261,22 +256,45 @@ class UserController extends Controller
                 ], 401);
             }
 
-            $code = generate_code_user($user);
+            if ($request->code == null) {
 
-            try {
+                $code = generate_code_user($user);
 
-                send_code_by_mail($user->email, $code);
+                try {
 
-            } catch (\Throwable $th) {
-                // ....
+                    send_code_by_mail($user->email, $code);
+
+                } catch (\Throwable $th) {
+                    // ....
+                }
+
+                return response()->json([
+                    'status' => true,
+                    'code' => self::OK,
+                    'user_id' => $user->id,
+                    'message' => 'Code Send Your Phone Successfully',
+                ], 200);
+            }else{
+
+                if ($user->phone_verified == $request->code) {
+                    $user->update([
+                        'phone' => $request->phone,
+                        'phone_verified' => null
+                    ]);
+
+                    return response()->json([
+                        'status' => true,
+                        'code' => self::OK,
+                        'message' => 'Phone Updated successfully',
+                    ], 200);
+                }else{
+                    return response()->json([
+                        'status' => false,
+                        'code' => self::INVALID_DATA,
+                        'message' => 'Provided verification code is incorrect',
+                    ], 401);
+                }
             }
-
-            return response()->json([
-                'status' => true,
-                'code' => self::OK,
-                'user_id' => $user->id,
-                'message' => 'Code Send Your Phone Successfully',
-            ], 200);
 
         } catch (\Throwable $th) {
             return response()->json([
@@ -287,7 +305,8 @@ class UserController extends Controller
 
     }
 
-    public function updateInformation(Request $request){
+    public function updateInformation(Request $request)
+    {
 
         $user = $request->user();
 
@@ -298,8 +317,7 @@ class UserController extends Controller
             'civility' => 'required',
             'birth_country' => 'required',
             'profession' => 'required',
-            'pseudo' => 'required',
-            'email' => 'required|unique:users,email,'.$user->id,
+            'pseudo' => 'required|unique:users,name,'.$user->id,
         ]);
 
         if($validateUser->fails()){
@@ -323,7 +341,6 @@ class UserController extends Controller
 
         $user->update([
             'name' => $request->pseudo,
-            'email' => $request->email,
         ]);
 
         return response()->json([
