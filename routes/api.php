@@ -75,6 +75,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/user/update-information', [UserController::class, 'updateInformation']);
 
+    Route::post('/user/update-notifications-settings', [UserController::class, 'updateNotificationsSettings']);
+
     Route::get('/user/meta', [UserController::class, 'meta']);
 
     Route::get('/user/contributions', [UserController::class, 'contributions']);

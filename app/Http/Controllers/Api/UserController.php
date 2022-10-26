@@ -317,6 +317,7 @@ class UserController extends Controller
             'civility' => 'required',
             'birth_country' => 'required',
             'profession' => 'required',
+            'email' => 'required',
             'pseudo' => 'required|unique:users,name,'.$user->id,
         ]);
 
@@ -341,6 +342,7 @@ class UserController extends Controller
 
         $user->update([
             'name' => $request->pseudo,
+            'email' => $request->email,
         ]);
 
         return response()->json([
@@ -395,6 +397,39 @@ class UserController extends Controller
                     'message' => 'Password Updated successfully.',
                 ], 401);
             }
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateNotificationsSettings(Request $request)
+    {
+
+        $user = $request->user();
+
+        try {
+            $user_notifications_settings = UserNotificationSetting::where('user_id', $user->id)->first();
+
+            if (!$user_notifications_settings) {
+                $user_notifications_settings = UserNotificationSetting::create([
+                    'user_id' => $user->id
+                ]);
+            }
+
+            $user_notifications_settings->update([
+                $request->setting => $request->value
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'code' => self::OK,
+                'message' => 'User Notifications Setting Successfully',
+                'user_id' => $user->id
+            ], 200);
+
         } catch (\Throwable $th) {
             return response()->json([
                 'status' => false,
