@@ -37,6 +37,7 @@ class UserController extends Controller
             'game_level'=> $account->game_level,
             'experience_count'=> $account->experience_count,
             'certify'=> $account->certify,
+            'pseudo'=> $user->name,
             'phone'=> $user->phone,
             'email'=> $user->email,
             'role'=> $user->role,
@@ -104,6 +105,11 @@ class UserController extends Controller
                     return response()->json([
                         'status' => true,
                         'code' => self::OK,
+                        'image' => array(
+                            'id' => $save->id,
+                            'image_url' => asset(picture_path_user() . $save->filename),
+                            'user_id' => $save->user_id
+                        ),
                         'message' => 'Image uploaded',
                     ], 200);
 
@@ -134,6 +140,11 @@ class UserController extends Controller
                         return response()->json([
                             'status' => true,
                             'code' => self::OK,
+                            'image' => array(
+                                'id' => $save->id,
+                                'image_url' => asset(picture_path_user() . $save->filename),
+                                'user_id' => $save->user_id
+                            ),
                             'message' => 'Image uploaded',
                         ], 200);
 
