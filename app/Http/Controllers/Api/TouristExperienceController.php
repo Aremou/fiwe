@@ -26,30 +26,13 @@ class TouristExperienceController extends Controller
         $t_tourist_experiences = [];
 
         foreach ($tourist_experiences as $key => $tourist_experience){
-            $tourist_experience->image_id = select_image($tourist_experience->image_id) != null ? asset(image_path_tourist_experience() . select_image($tourist_experience->image_id)->filename) : null;
-
-            $tourist_experience->with('activities')->get();
-
-            $tourist_experience->with('disponibilities')->get();
-
-            $t_tourist_experiences[$key] = [
-                'id' => $tourist_experience->id,
-                'label' => $tourist_experience->label,
-                'description' => $tourist_experience->description,
-                'city' => $tourist_experience->city,
-                'unit_price' => $tourist_experience->unit_price,
-                'image_url' => $tourist_experience->image_id,
-                'latitude' => show_location($tourist_experience->geolocation_id)->latitude,
-                'longitude' => show_location($tourist_experience->geolocation_id)->longitude,
-                'activities' => $tourist_experience->activities,
-                'disponibilities' => $tourist_experience->disponibilities
-            ];
+            $t_tourist_experiences[$key] = format_tourist_experience($tourist_experience);
         }
 
         return response()->json([
             'status' => true,
             'code' => self::OK,
-            'items' => $t_tourist_experiences ?? $tourist_experiences,
+            'items' => $t_tourist_experiences,
         ]);
     }
 
@@ -61,14 +44,15 @@ class TouristExperienceController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-    public function payment(Request $request, $id)
+    public function payment(Request $request)
     {
 
         try {
             //Validated
             $validate = Validator::make($request->all(),
             [
-                'price'=> 'required',
+                'tourist_experience_id'=> 'required',
+                'amount'=> 'required',
                 'disponibility'=> 'required',
                 'transaction_id'=> 'required',
                 'quantity'=> 'required',
@@ -83,12 +67,21 @@ class TouristExperienceController extends Controller
                 ], 401);
             }
 
-            $tourist = TouristExperience::findOrfail($id);
+            $tourist = TouristExperience::find($request->tourist_experience_id);
 
-            UserExperience::create([
+            if (!$tourist) {
+                return response()->json([
+                    'status' => false,
+                    'code' => self::NOT_FOUND,
+                    'message' => 'Tourist Experience not found'
+                ], 404);
+            }
+
+            $user_experience = UserExperience::create([
                 'user_id' => auth()->user()->id,
                 'tourist_experience_id' => $tourist->id,
-                'price' => $request->price,
+                'label' => $tourist->label,
+                'amount' => $request->amount,
                 'disponibility' => $request->disponibility,
                 'status' => 'active',
                 'transaction_id' => $request->transaction_id,
@@ -98,7 +91,8 @@ class TouristExperienceController extends Controller
             return response()->json([
                 'status' => true,
                 'code' => self::OK,
-                'message' => 'Payement éffectué avec succès',
+                'item' => format_user_experience($user_experience),
+                'message' => 'Payement Successfully',
             ], 200);
 
         } catch (\Throwable $th) {
@@ -115,11 +109,27 @@ class TouristExperienceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function like(Request $request, $id)
+    public function like(Request $request)
     {
         try {
 
-            $tourist_experience = TouristExperience::find($id);
+            $validateTouristExperience = Validator::make(
+                $request->all(),
+                [
+                    'tourist_experience_id' => 'required',
+                ]
+            );
+
+            if ($validateTouristExperience->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'code' => self::INVALID_DATA,
+                    'message' => 'validation error',
+                    'errors' => $validateTouristExperience->errors()
+                ], 404);
+            }
+
+            $tourist_experience = TouristExperience::find($request->tourist_experience_id);
 
             if (!$tourist_experience) {
                 return response()->json([

@@ -8,8 +8,8 @@ if (!function_exists('select_image')) {
     {
         $image = Medias::find($id);
         if ($image) {
-            return $image ;
-        }else{
+            return $image;
+        } else {
             return null;
         }
     }
@@ -48,9 +48,22 @@ if (!function_exists('delete_image_path')) {
     {
         $path = public_path() . "/" . $path . $name;
 
-        if(file_exists($path)){
+        if (file_exists($path)) {
             return unlink($path);
         }
+    }
+}
 
+
+if (!function_exists('format_image_data')) {
+    function format_image_data($path, $image)
+    {
+        return array(
+            'id' => $image->id,
+            'image_url' => asset($path . $image->filename),
+            'user_id' => $image->user_id,
+            'created_at' => $image->created_at,
+            'updated_at' => $image->updated_at,
+        );
     }
 }

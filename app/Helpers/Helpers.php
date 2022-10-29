@@ -133,3 +133,10 @@ if (!function_exists('slug_terms_of_use')) {
     }
 }
 
+if (!function_exists('format_boolean')) {
+    function format_boolean($value)
+    {
+        return $value == 1 ? true : false;
+    }
+}
+
