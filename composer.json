@@ -31,7 +31,8 @@
             "app/Helpers/Helpers_user.php",
             "app/Helpers/Helpers_tourist_experience.php",
             "app/Helpers/Helpers_interest_center.php",
-            "app/Helpers/Helpers_user_experience.php"
+            "app/Helpers/Helpers_user_experience.php",
+            "app/Helpers/Helpers_collection.php"
         ],
         "psr-4": {
             "App\\": "app/",

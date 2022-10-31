@@ -89,7 +89,7 @@ class UserController extends Controller
         return response()->json([
           'status' => true,
           'code' => self::OK,
-          'image' => format_image_data(picture_path_user(), $save),
+          'image_url' => asset(picture_path_user() . $save->filename),
           'message' => 'Image uploaded',
         ], 200);
       } else {
@@ -103,22 +103,23 @@ class UserController extends Controller
           ], 404);
         }
 
+
         delete_image_path(picture_path_user(), $image->filename);
 
         $save = update_image('users', $request->file, $request->file('file'), $image);
 
         if ($save == null) {
-          return response()->json([
-            'status' => false,
-            'code' => self::NOT_ACCESSIBLE,
-            'message' => 'Image not uploaded'
-          ], 500);
+            return response()->json([
+                'status' => false,
+                'code' => self::NOT_ACCESSIBLE,
+                'message' => 'Image not uploaded'
+            ], 500);
         }
 
         return response()->json([
           'status' => true,
           'code' => self::OK,
-          'image' => format_image_data(picture_path_user(), $save),
+          'image_url' => asset(picture_path_user() . $image->filename),
           'message' => 'Image uploaded',
         ], 200);
       }
@@ -167,9 +168,18 @@ class UserController extends Controller
       $tourist_experiences[$key] = $tourist_experience->id;
     }
 
+    $user_experiences = UserExperience::where('user_id', $user->id)->get();
+
+    $t_user_experiences = [];
+
+    foreach ($user_experiences as $key => $user_experience) {
+      $t_user_experiences[$key] = $user_experience->id;
+    }
+
     $meta = array(
       'interest_center_like' => $interest_centers,
       'tourist_experience_like' => $tourist_experiences,
+      't_user_experience' => $t_user_experiences,
       'user_notifications_settings' => $t_user_notifications_settings,
     );
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Medias;
 use App\Models\Account;
+use App\Models\Collection;
 use App\Models\AdminAccount;
 use App\Models\InterestCenter;
 use App\Models\UserExperience;
@@ -90,6 +91,11 @@ class User extends Authenticatable
     public function interest_centers()
     {
         return $this->hasMany(InterestCenter::class);
+    }
+
+    public function collections()
+    {
+        return $this->hasMany(Collection::class);
     }
 
     public function like_interest_centers()

@@ -16,7 +16,8 @@ class UserExperience extends Model
     protected $fillable = [
         'user_id',
         'tourist_experience_id',
-        'price',
+        'label',
+        'amount',
         'disponibility',
         'status',
         'transaction_id',

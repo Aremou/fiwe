@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\OtherController;
+use App\Http\Controllers\Api\CollectionController;
 use App\Http\Controllers\Api\InterestCenterController;
 use App\Http\Controllers\Api\TouristExperienceController;
 use App\Http\Controllers\Api\InterestCenterCategoryController;
@@ -112,5 +113,22 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Espace Me
     Route::post('/user/payement-statement', [UserController::class, 'payementStatement']);
+
+
+    //Collections
+    Route::get('/user/collections', [CollectionController::class, 'index']);
+
+    Route::post('/user/collection', [CollectionController::class, 'store']);
+
+    Route::put('/user/collection', [CollectionController::class, 'update']);
+
+    Route::delete('/user/collection', [CollectionController::class, 'deleteCollection']);
+
+    Route::post('/user/collection/images/add', [CollectionController::class, 'addImage']);
+
+    Route::put('/user/collection/images/move', [CollectionController::class, 'moveImage']);
+
+    Route::delete('/user/collection/image/delete', [CollectionController::class, 'deleteImage']);
+
 
 });

@@ -43,6 +43,13 @@ if (!function_exists('image_path_tourist_experience')) {
     }
 }
 
+if (!function_exists('image_path_collection')) {
+    function image_path_collection()
+    {
+        return "storage/collections/";
+    }
+}
+
 if (!function_exists('delete_image_path')) {
     function delete_image_path($path, $name)
     {
