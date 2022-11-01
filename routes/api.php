@@ -112,7 +112,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     // Espace Me
-    Route::post('/user/payement-statement', [UserController::class, 'payementStatement']);
+    Route::get('/user/payement-statement', [UserController::class, 'payementStatement']);
 
 
     //Collections
@@ -128,7 +128,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::put('/user/collection/images/move', [CollectionController::class, 'moveImage']);
 
-    Route::delete('/user/collection/image/delete', [CollectionController::class, 'deleteImage']);
+    Route::delete('/user/collection/images/delete', [CollectionController::class, 'deleteImage']);
 
 
 });

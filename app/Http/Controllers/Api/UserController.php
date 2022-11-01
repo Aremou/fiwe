@@ -161,16 +161,17 @@ class UserController extends Controller
     $interest_centers = [];
     $tourist_experiences = [];
 
-    foreach ($user->like_interest_centers as $key => $interest_center) {
-      $interest_centers[$key] = $interest_center->id;
-    }
-    foreach ($user->like_tourist_experiences as $key => $tourist_experience) {
-      $tourist_experiences[$key] = $tourist_experience->id;
-    }
-
     $user_experiences = UserExperience::where('user_id', $user->id)->get();
 
     $t_user_experiences = [];
+
+    foreach ($user->like_interest_centers as $key => $interest_center) {
+      $interest_centers[$key] = $interest_center->id;
+    }
+
+    foreach ($user->like_tourist_experiences as $key => $tourist_experience) {
+      $tourist_experiences[$key] = $tourist_experience->id;
+    }
 
     foreach ($user_experiences as $key => $user_experience) {
       $t_user_experiences[$key] = $user_experience->id;
@@ -179,7 +180,7 @@ class UserController extends Controller
     $meta = array(
       'interest_center_like' => $interest_centers,
       'tourist_experience_like' => $tourist_experiences,
-      't_user_experience' => $t_user_experiences,
+      'purchased_experiences' => $t_user_experiences,
       'user_notifications_settings' => $t_user_notifications_settings,
     );
 
