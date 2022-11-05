@@ -104,11 +104,14 @@ if (!function_exists('show_location')) {
     {
         $location = Geolocation::find($id);
 
-        if($location){
-            return $location;
-        }else {
-            return null ;
+        if(!$location){
+            return null;
         }
+
+        return (object)[
+            'latitude' => (float)$location->latitude,
+            'longitude' => (float)$location->longitude,
+        ];
     }
 }
 

@@ -44,7 +44,7 @@ if (!function_exists('format_tourist_experience')) {
             'label' => $tourist_experience->label,
             'description' => $tourist_experience->description,
             'city' => $tourist_experience->city,
-            'unit_price' => $tourist_experience->unit_price,
+            'unit_price' => (float)$tourist_experience->unit_price,
             'image_url' => $tourist_experience->image_id,
             'latitude' => $show_location->latitude,
             'longitude' => $show_location->longitude,
