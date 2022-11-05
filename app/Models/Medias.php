@@ -23,7 +23,7 @@ class Medias extends Model
 
     public function interest_centers()
     {
-        return $this->belongsToMany(InterestCenter::class);
+        return $this->belongsToMany(InterestCenter::class)->orderBy('created_at', 'desc');
     }
 
     public function has_interest_centers()

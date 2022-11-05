@@ -18,7 +18,7 @@ class InterestCenterController extends Controller
      */
     public function index()
     {
-        $interest_centers = InterestCenter::where('is_active', 1)->get();
+        $interest_centers = InterestCenter::where('is_active', 1)->orderBy('created_at', 'DESC')->get();
         $t_interest_centers = [];
 
         foreach ($interest_centers as $key => $interest_center) {

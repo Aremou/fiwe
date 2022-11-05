@@ -21,7 +21,7 @@ class TouristExperienceController extends Controller
      */
     public function index()
     {
-        $tourist_experiences = TouristExperience::where('is_active', 1)->get();
+        $tourist_experiences = TouristExperience::where('is_active', 1)->orderBy('created_at', 'DESC')->get();
 
         $t_tourist_experiences = [];
 

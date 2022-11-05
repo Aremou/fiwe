@@ -9,7 +9,7 @@ class InterestCenterCategory extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['label', 'deleted_at', 'created_at', 'updated_at'];
+    protected $fillable = ['label', 'color', 'deleted_at', 'created_at', 'updated_at'];
 
 
     public function interest_centers()

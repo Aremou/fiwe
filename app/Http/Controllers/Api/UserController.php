@@ -161,7 +161,7 @@ class UserController extends Controller
     $interest_centers = [];
     $tourist_experiences = [];
 
-    $user_experiences = UserExperience::where('user_id', $user->id)->get();
+    $user_experiences = UserExperience::where('user_id', $user->id)->orderBy('created_at', 'DESC')->get();
 
     $t_user_experiences = [];
 
@@ -198,7 +198,7 @@ class UserController extends Controller
 
     $user = $request->user();
 
-    $contributions = InterestCenter::where('user_id', $user->id)->get();
+    $contributions = InterestCenter::where('user_id', $user->id)->orderBy('created_at', 'DESC')->get();
 
     $t_contributions = [];
 
@@ -218,7 +218,7 @@ class UserController extends Controller
   {
     $user = $request->user();
 
-    $user_experiences = UserExperience::where('user_id', $user->id)->get();
+    $user_experiences = UserExperience::where('user_id', $user->id)->orderBy('created_at', 'DESC')->get();
 
     $t_user_experiences = [];
 

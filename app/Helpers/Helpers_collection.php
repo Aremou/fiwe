@@ -11,10 +11,12 @@ if (!function_exists('format_collection')) {
             $t_collection_images[$key] = format_image_data(image_path_collection(), $image);
         }
 
+        $cover_image = select_image($collection->cover_image_id);
+
         return [
             'id' => $collection->id,
             'label' => $collection->label,
-            'cover_imahe_id' => $collection->cover_image_id,
+            'cover_image_url' => $cover_image ? asset(image_path_collection() . $cover_image->filename) : null,
             'user_id' => $collection->user_id,
             'images' => $t_collection_images,
             'created_at' => $collection->created_at,
