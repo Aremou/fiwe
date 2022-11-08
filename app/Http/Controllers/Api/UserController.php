@@ -176,7 +176,7 @@ class UserController extends Controller
     }
 
     foreach ($user_experiences as $key => $user_experience) {
-      $t_user_experiences[$key] = $user_experience->id;
+      $t_user_experiences[$key] = $user_experience->tourist_experience_id;
     }
 
     $meta = array(
