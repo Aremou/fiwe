@@ -61,9 +61,7 @@ class AuthController extends Controller
                 'user_id' => $user->id
             ]);
 
-            UserNotificationSetting::create([
-                'user_id' => $user->id
-            ]);
+            create_user_notifications_settings($user);
 
             $code = generate_code_user($user);
 

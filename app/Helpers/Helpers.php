@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Kkiapay\Kkiapay;
 use Twilio\Rest\Client;
 use App\Models\Geolocation;
 use App\Mail\SendCodeByEmail;
@@ -109,6 +110,7 @@ if (!function_exists('show_location')) {
         }
 
         return (object)[
+            'label' => $location->label,
             'latitude' => (float)$location->latitude,
             'longitude' => (float)$location->longitude,
         ];
@@ -143,3 +145,15 @@ if (!function_exists('format_boolean')) {
     }
 }
 
+if(!function_exists('kkiapay')){
+    function kkiapay($id_transaction){
+        $public_key = "9f2b65004b0e11ed958fbf3ec63d1ffd" ;
+        $private_key = "tpk_9f2b8c114b0e11ed958fbf3ec63d1ffd";
+        $secret = "tsk_9f2b8c124b0e11ed958fbf3ec63d1ffd";
+
+        $kkiapay = new Kkiapay($public_key, $private_key, $secret, $sandbox=true);
+
+        return $kkiapay->verifyTransaction($id_transaction);
+
+    }
+}

@@ -6,11 +6,14 @@ use SplFileInfo;
 use App\Models\Image;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\UserExperience;
 use App\Models\TouristExperience;
 use App\Http\Controllers\Controller;
-use App\Models\UserExperience;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\SendMailAtUserForPurchaseExperienceTourist;
+use App\Mail\SendMailAtAdminForPurchaseExperienceTourist;
 
 class TouristExperienceController extends Controller
 {
@@ -67,6 +70,16 @@ class TouristExperienceController extends Controller
                 ], 401);
             }
 
+            $check_transaction = kkiapay($request->transaction_id);
+
+            if ($check_transaction->status != "SUCCESS") {
+                return response()->json([
+                    'status' => false,
+                    'code' => self::NOT_FOUND,
+                    'message' => 'Reference payment is incorrect'
+                ], 404);
+            }
+
             $tourist = TouristExperience::find($request->tourist_experience_id);
 
             if (!$tourist) {
@@ -77,8 +90,9 @@ class TouristExperienceController extends Controller
                 ], 404);
             }
 
+            $user = auth()->user();
             $user_experience = UserExperience::create([
-                'user_id' => auth()->user()->id,
+                'user_id' => $user->id,
                 'tourist_experience_id' => $tourist->id,
                 'label' => $tourist->label,
                 'amount' => $request->amount,
@@ -87,6 +101,10 @@ class TouristExperienceController extends Controller
                 'transaction_id' => $request->transaction_id,
                 'quantity' => $request->quantity,
             ]);
+
+            Mail::to(env('MAIL_TO_ADDRESS'))->send(new SendMailAtAdminForPurchaseExperienceTourist($user_experience));
+
+            Mail::to($user->email)->send(new SendMailAtUserForPurchaseExperienceTourist($user_experience));
 
             return response()->json([
                 'status' => true,

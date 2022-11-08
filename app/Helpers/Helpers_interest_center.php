@@ -30,7 +30,7 @@ if (!function_exists('format_interest_center')) {
             'user_id' => $interest_center->user_id,
             'likes' => $interest_center->likes,
             'is_active' => format_boolean($interest_center->is_active),
-            'interest_center_category_id' => $interest_center->interest_center_category->id,
+            'interest_center_category' => $interest_center->interest_center_category,
             'gallery' => $t_interest_center_gallery,
             'created_at' => $interest_center->created_at,
             'updated_at' => $interest_center->updated_at

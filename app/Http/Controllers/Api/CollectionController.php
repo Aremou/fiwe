@@ -116,7 +116,7 @@ class CollectionController extends Controller
             return response()->json([
                 'status' => true,
                 'code' => self::OK,
-                'message' => 'COllection updated successfully',
+                'message' => 'Collection updated successfully',
             ], 200);
 
         } catch (\Throwable $th) {

@@ -22,7 +22,6 @@ class CreateAccountsTable extends Migration
             $table->string('profession');
             $table->string('badge')->nullable();
             $table->string('game_level')->nullable();
-            $table->integer('experience_count')->default(0);
             $table->boolean('certify')->default(0);
             $table->foreignId('user_id')->constrained()->onUpdate('cascade')->onDelete('restrict');
             $table->softDeletes();

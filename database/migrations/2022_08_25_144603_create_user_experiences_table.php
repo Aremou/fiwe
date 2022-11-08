@@ -21,7 +21,7 @@ class CreateUserExperiencesTable extends Migration
             $table->decimal('amount');
             $table->string('disponibility');
             $table->string('status');
-            $table->string('transaction_id');
+            $table->string('transaction_id')->unique();
             $table->integer('quantity');
             $table->softDeletes();
             $table->timestamps();

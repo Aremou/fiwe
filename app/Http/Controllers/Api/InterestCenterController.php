@@ -7,7 +7,9 @@ use App\Models\Medias;
 use Illuminate\Http\Request;
 use App\Models\InterestCenter;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use App\Mail\SendMailForInteresteCenterAddByUser;
 
 class InterestCenterController extends Controller
 {
@@ -79,6 +81,9 @@ class InterestCenterController extends Controller
                     'interest_center_category_id' => $request->interest_center_category,
                     'is_active' => $auth_user->role == "user" ? 0 : 1
                 ]);
+
+                Mail::to(env('MAIL_TO_ADDRESS'))->send(new SendMailForInteresteCenterAddByUser($interest_center));
+
                 return response()->json([
                     'status' => true,
                     'code' => self::OK,

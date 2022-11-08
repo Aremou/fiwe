@@ -139,21 +139,23 @@ class UserController extends Controller
 
     $t_user_notifications_settings = [];
 
-    if ($user_notifications_settings != null) {
-      $t_user_notifications_settings = [
-        'id' => $user_notifications_settings->id,
-        'new_post' => format_boolean($user_notifications_settings->new_post),
-        'like_mention' => format_boolean($user_notifications_settings->like_mention),
-        'comments' => format_boolean($user_notifications_settings->comments),
-        'discussions_answers' => format_boolean($user_notifications_settings->discussions_answers),
-        'program_reminder' => $user_notifications_settings->program_reminder,
-        'new_tourist_experience' => format_boolean($user_notifications_settings->new_tourist_experience),
-        'nearby_players' => format_boolean($user_notifications_settings->nearby_players),
-        'share_experiences' => format_boolean($user_notifications_settings->share_experiences),
-        'repeat_unread_notifications' => $user_notifications_settings->repeat_unread_notifications,
-        'user_id' => $user_notifications_settings->user_id,
-      ];
+    if ($user_notifications_settings == null) {
+        $user_notifications_settings = create_user_notifications_settings($user);
     }
+
+    $t_user_notifications_settings = [
+      'id' => $user_notifications_settings->id,
+      'new_post' => format_boolean($user_notifications_settings->new_post),
+      'like_mention' => format_boolean($user_notifications_settings->like_mention),
+      'comments' => format_boolean($user_notifications_settings->comments),
+      'discussions_answers' => format_boolean($user_notifications_settings->discussions_answers),
+      'program_reminder' => $user_notifications_settings->program_reminder,
+      'new_tourist_experience' => format_boolean($user_notifications_settings->new_tourist_experience),
+      'nearby_players' => format_boolean($user_notifications_settings->nearby_players),
+      'share_experiences' => format_boolean($user_notifications_settings->share_experiences),
+      'repeat_unread_notifications' => $user_notifications_settings->repeat_unread_notifications,
+      'user_id' => $user_notifications_settings->user_id,
+    ];
 
     $user->with('like_interest_centers')->get();
     $user->with('like_tourist_experiences')->get();
@@ -423,26 +425,24 @@ class UserController extends Controller
     }
 
     try {
-      $user = $request->user();
+        $user = $request->user();
 
-      $user_notifications_settings = UserNotificationSetting::where('user_id', $user->id)->first();
+        $user_notifications_settings = UserNotificationSetting::where('user_id', $user->id)->first();
 
-      if (!$user_notifications_settings) {
-        $user_notifications_settings = UserNotificationSetting::create([
-          'user_id' => $user->id
-        ]);
-      }
+        if (!$user_notifications_settings) {
+            $user_notifications_settings = create_user_notifications_settings($user);
+        }
 
-      $user_notifications_settings->update([
+        $user_notifications_settings->update([
         $request->setting => $request->value
-      ]);
+        ]);
 
-      return response()->json([
+        return response()->json([
         'status' => true,
         'code' => self::OK,
-        'message' => 'User Notifications Setting Successfully',
+        'message' => 'User Notifications Setting Updated Successfully',
         'user_id' => $user->id
-      ], 200);
+        ], 200);
     } catch (\Throwable $th) {
       return response()->json([
         'status' => false,

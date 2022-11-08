@@ -3,6 +3,7 @@
 use App\Models\Medias;
 use App\Models\Account;
 use Illuminate\Support\Str;
+use App\Models\UserNotificationSetting;
 
 if (!function_exists('save_image')) {
     function save_image($dir, $file1, $file2, $user)
@@ -82,6 +83,17 @@ if (!function_exists('format_user_data')) {
             'profile_image_url' => $profile_image ? asset(picture_path_user() . $profile_image->filename) : null,
             'cover_image_url' => $cover_image ? asset(picture_path_user() . $cover_image->filename) : null,
         );
+    }
+}
+
+if (!function_exists('create_user_notifications_settings')) {
+    function create_user_notifications_settings($user)
+    {
+        $user_notifications_settings = UserNotificationSetting::create([
+            'user_id' => $user->id
+        ]);
+
+        return $user_notifications_settings;
     }
 }
 

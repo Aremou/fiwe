@@ -20,7 +20,6 @@ class Account extends Model
         'profession',
         'badge',
         'game_level',
-        'experience_count',
         'certify',
         'user_id',
         'deleted_at',
